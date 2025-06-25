@@ -1,0 +1,92 @@
+/*
+ * Styles personnalisés pour la section logos clients
+ * Défilement continu et affichage en couleurs
+ */
+
+/* Section logos clients */
+.clients-logo-section .swiper {
+    overflow: visible;
+}
+
+/* Logos clients - supprimer le filtre grayscale */
+.clients-logo-section .swiper-slide img {
+    filter: none !important;
+    -webkit-filter: none !important;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0.8;
+}
+
+/* Effet hover sur les logos */
+.clients-logo-section .swiper-slide img:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Animation de défilement fluide */
+.clients-logo-section .swiper-wrapper {
+    transition-timing-function: linear !important;
+}
+
+/* Optimisation pour un défilement continu sans pause */
+.clients-continuous-scroll {
+    /* Animation CSS personnalisée pour un défilement vraiment continu */
+    animation: scroll-continuous 30s linear infinite;
+}
+
+@keyframes scroll-continuous {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Responsive - ajustement sur mobile */
+@media (max-width: 767.98px) {
+    .clients-logo-section .swiper-slide img {
+        max-height: 40px;
+        width: auto;
+    }
+}
+
+@media (min-width: 768px) {
+    .clients-logo-section .swiper-slide img {
+        max-height: 50px;
+        width: auto;
+    }
+}
+
+/* Alternative CSS-only pour défilement continu */
+.clients-logo-marquee {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.clients-logo-marquee .logo-track {
+    display: flex;
+    animation: marquee 20s linear infinite;
+    align-items: center;
+}
+
+.clients-logo-marquee .logo-track img {
+    height: 50px;
+    width: auto;
+    margin: 0 3rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.clients-logo-marquee .logo-track img:hover {
+    opacity: 1;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}

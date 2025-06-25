@@ -1,0 +1,135 @@
+{% load static %}
+
+<footer class="bg-dark pt-6" data-bs-theme="dark">
+	<!-- Divider -->
+	<div class="border-bottom border-primary opacity-3"></div>
+
+	<!-- Footer decoration -->
+	<div class="position-absolute top-0 start-50 translate-middle-x">
+		<img src="{% static 'images/elements/decoration-pattern-2.svg' %}" style="opacity:0.05;" alt="">
+	</div>
+
+	<div class="container position-relative mt-5">
+		<div class="row g-4 justify-content-between">
+
+			<!-- Widget 1 START -->
+			<div class="col-lg-3">
+				<!-- logo -->
+				<a class="me-0" href="#">
+					<img class="light-mode-item h-40px" src="{% static 'images/logo.svg' %}" alt="logo">
+					<img class="dark-mode-item h-40px" src="{% static 'images/logo-light.svg' %}" alt="logo">
+				</a>
+
+				<p class="mt-4 mb-2">Webtech Solutions, votre partenaire digital pour créer des solutions web innovantes et performantes qui propulsent votre entreprise vers le succès.</p>
+				
+				<!-- Contact info -->
+				<div class="mt-4">
+					<p class="mb-2"><i class="bi bi-geo-alt me-2"></i>Paris, France</p>
+					<p class="mb-2"><i class="bi bi-envelope me-2"></i>contact@webtech-solutions.fr</p>
+					<p class="mb-0"><i class="bi bi-telephone me-2"></i>+33 (0)1 XX XX XX XX</p>
+				</div>
+			</div>
+			<!-- Widget 1 END -->
+
+			<!-- Widget 2 START -->
+			<div class="col-lg-8 col-xxl-7">
+				<div class="row g-4">
+					<!-- Link block -->
+					<div class="col-6 col-md-4">
+						<h6 class="mb-2 mb-md-4">Services</h6>
+						<ul class="nav flex-column">
+							<li class="nav-item"><a class="nav-link pt-0" href="#">Développement Web</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Applications Mobiles</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">E-commerce</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Référencement SEO</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Consulting Digital</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Formation</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Maintenance & Support</a></li>
+						</ul>
+					</div>
+
+					<!-- Link block -->
+					<div class="col-6 col-md-4">
+						<h6 class="mb-2 mb-md-4">Entreprise</h6>
+						<ul class="nav flex-column">
+							<li class="nav-item"><a class="nav-link pt-0" href="#">À propos</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Notre équipe</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Portfolio</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Témoignages</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Carrières</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Partenaires</a></li>
+						</ul>
+					</div>
+
+					<!-- Link block -->
+					<div class="col-md-4">
+						<h6 class="mb-2 mb-md-4">Support</h6>
+						<ul class="nav flex-column mb-4">
+							<li class="nav-item"><a class="nav-link pt-0" href="#">Centre d'aide</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Documentation</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">FAQ</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Politique de confidentialité</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Conditions d'utilisation</a></li>
+						</ul>
+
+						<!-- Social buttons -->
+						<h6 class="mb-2 mb-md-4">Suivez-nous</h6>
+						<ul class="list-inline mb-0 mt-3">
+							<li class="list-inline-item"> 
+								<a class="btn btn-xs btn-icon btn-light" href="#" aria-label="Facebook">
+									<i class="fab fa-fw fa-facebook-f lh-base"></i>
+								</a> 
+							</li>
+							<li class="list-inline-item"> 
+								<a class="btn btn-xs btn-icon btn-light" href="#" aria-label="Instagram">
+									<i class="fab fa-fw fa-instagram lh-base"></i>
+								</a> 
+							</li>
+							<li class="list-inline-item"> 
+								<a class="btn btn-xs btn-icon btn-light" href="#" aria-label="Twitter">
+									<i class="fab fa-fw fa-twitter lh-base"></i>
+								</a> 
+							</li>
+							<li class="list-inline-item"> 
+								<a class="btn btn-xs btn-icon btn-light" href="#" aria-label="LinkedIn">
+									<i class="fab fa-fw fa-linkedin-in lh-base"></i>
+								</a> 
+							</li>
+							<li class="list-inline-item"> 
+								<a class="btn btn-xs btn-icon btn-light" href="#" aria-label="YouTube">
+									<i class="fab fa-fw fa-youtube lh-base"></i>
+								</a> 
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- Widget 2 END -->
+		</div>
+
+		<!-- Divider -->
+		<hr class="mt-4 mb-0">
+
+		<!-- Bottom footer -->
+		<div class="d-md-flex justify-content-between align-items-center text-center text-lg-start py-4">
+			<!-- copyright text -->
+			<div class="text-body"> 
+				Copyrights ©{% now "Y" %} Webtech Solutions. Tous droits réservés.
+			</div>
+			
+			<!-- Language selector -->
+			<div class="dropdown dropup text-center text-md-end mt-3 mt-md-0">
+				<a class="dropdown-toggle btn btn-sm btn-light mb-0" href="#" role="button" id="languageSwitcher" data-bs-toggle="dropdown" aria-expanded="false">
+					<i class="fas fa-globe me-2"></i>Langue
+				</a>
+				<ul class="dropdown-menu min-w-auto" aria-labelledby="languageSwitcher">
+					<li><a class="dropdown-item me-4" href="#"><img class="fa-fw me-2" src="{% static 'images/flags/sp.svg' %}" alt="">Français</a></li>
+					<li><a class="dropdown-item me-4" href="#"><img class="fa-fw me-2" src="{% static 'images/flags/uk.svg' %}" alt="">English</a></li>
+					<li><a class="dropdown-item me-4" href="#"><img class="fa-fw me-2" src="{% static 'images/flags/gr.svg' %}" alt="">Deutsch </a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>

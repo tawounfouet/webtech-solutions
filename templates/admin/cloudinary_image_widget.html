@@ -1,0 +1,35 @@
+{% load static %}
+<div class="cloudinary-widget">
+    <input type="file" name="{{ widget.name }}" {% if widget.attrs %}{% for attr, val in widget.attrs.items %} {{ attr }}="{% if attr == 'class' %}{{ val }}{% else %}{{ val|stringformat:'s' }}{% endif %}"{% endfor %}{% endif %} />
+    
+    {% if widget.value %}
+    <div class="current-image" style="margin-top: 10px;">
+        <label><strong>Image actuelle:</strong></label>
+        <div class="image-preview" style="margin: 10px 0;">
+            <!-- L'aperçu sera généré par le widget Python -->
+        </div>
+        <label>
+            <input type="checkbox" name="{{ widget.name }}-clear" />
+            Supprimer l'image actuelle
+        </label>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.cloudinary-widget .image-preview img {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.cloudinary-widget .image-preview img:hover {
+    transform: scale(1.05);
+}
+
+.cloudinary-preview {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+</style>

@@ -1,0 +1,96 @@
+// Should you need to overwrite any of our SCSS code or need to add any custom code, We highly recommend that you add your code into this file, so whenever theme update is available and you update the theme, You will not lose your hard work :)
+
+// Note for dark mode:
+// Uncomment below code and change primary color code to set different primary(i.e. light color of your primary) color in dark mode only.
+
+/*User CSS*/
+
+/* ===============================================
+   POLICES MODERNES POUR H1
+   =============================================== */
+// Import des polices Google Fonts modernes
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+// Style principal pour le h1 avec police moderne Inter (par défaut)
+.hero-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.1 !important;
+}
+
+// Variantes de polices alternatives
+.hero-title-space-grotesk {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.1 !important;
+}
+
+.hero-title-manrope {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.1 !important;
+}
+
+.hero-title-poppins {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.1 !important;
+}
+
+/* ========================================
+   Styles personnalisés - H1 Responsive
+   ======================================== */
+
+/* Réduction de la taille du h1 pour les mobiles */
+@media (max-width: 575.98px) {
+  h1, .h1 {
+    font-size: calc(1.375rem + 0.5vw) !important;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  h1, .h1 {
+    font-size: calc(1.375rem + 0.75vw) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  h1, .h1 {
+    font-size: calc(1.375rem + 1vw) !important;
+  }
+}
+
+/* Styles pour la section hero mobile */
+@media (max-width: 1199.98px) {
+  .hero-content-mobile {
+    text-align: center;
+    padding: 0 1rem;
+  }
+  
+  .hero-content-mobile .typed {
+    font-size: 1.1em !important;
+  }
+  
+  .hero-content-mobile p {
+    font-size: 1.1rem !important;
+    margin-top: 1.5rem !important;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hero-content-mobile {
+    text-align: left;
+  }
+  
+  .hero-content-mobile p {
+    text-align: left;
+  }
+}

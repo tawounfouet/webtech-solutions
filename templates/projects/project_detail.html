@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cloudinary_tags %}
+
+{% block title %}{{ project.title }} - Case Study{% endblock %}
+
+{% block meta_description %}{{ project.description }}{% endblock %}
+
+{% block content %}
+<main>
+    <!-- Hero Section -->
+    <section class="pt-xl-9">
+        <div class="container pt-4 pt-xl-0">
+            <div class="row">
+                <!-- Title -->
+                <div class="col-md-9 mx-auto text-center">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="mb-4">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Projets</a></li>
+                            <li class="breadcrumb-item active">{{ project.title }}</li>
+                        </ol>
+                    </nav>
+                    
+                    <!-- Title -->
+                    <h1 class="mb-4">{{ project.title }}</h1>
+                    {% if project.subtitle %}
+                        <p class="lead">{{ project.subtitle }}</p>
+                    {% endif %}
+                    <p>{{ project.description }}</p>
+                </div>
+
+                <!-- Featured Image -->
+                <div class="col-12 mt-6">
+                    {% if featured_image_urls %}
+                        <div class="card h-300px h-md-400px h-xl-600px overflow-hidden">
+                            <picture>
+                                <source media="(min-width: 1200px)" srcset="{{ featured_image_urls.large }}">
+                                <source media="(min-width: 768px)" srcset="{{ featured_image_urls.medium }}">
+                                <img src="{{ featured_image_urls.small }}" 
+                                     alt="{{ project.title }}" 
+                                     class="w-100 h-100 object-fit-cover"
+                                     loading="lazy">
+                            </picture>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Project Info -->
+                <div class="col-12 mt-6">
+                    <div class="row">
+                        <!-- Project metadata -->
+                        <div class="col-11 col-lg-5 col-xl-4 mx-auto mt-n8 mt-md-n9">
+                            <div class="card bg-dark text-white p-4" data-bs-theme="dark">
+                                <h5 class="text-white mb-3">Informations du projet</h5>
+                                
+                                <!-- Client -->
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Client:</span>
+                                    <span class="fw-bold">{{ project.client.name }}</span>
+                                </div>
+                                
+                                <!-- Categories -->
+                                {% if project.categories.exists %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Services:</span>
+                                    <div class="text-end">
+                                        {% for category in project.categories.all %}
+                                            <span class="badge bg-primary mb-1">{{ category.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Duration -->
+                                {% if project.start_date and project.end_date %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Durée:</span>
+                                    <span class="fw-bold">{{ project.duration_in_days }} jours</span>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Status -->
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Statut:</span>
+                                    <span class="badge bg-success">{{ project.get_status_display }}</span>
+                                </div>
+                                
+                                {% if project.client.website %}
+                                <div class="mt-3">
+                                    <a href="{{ project.client.website }}" class="btn btn-primary btn-sm" target="_blank">
+                                        <i class="bi bi-globe me-1"></i>Visiter le site
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Project content -->
+                        <div class="col-lg-7 ms-auto ps-5 mt-6 mt-lg-0">
+                            {% if project.content %}
+                                {{ project.content|linebreaks }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Images -->
+                {% if additional_images %}
+                <div class="col-12 mt-6">
+                    <h3 class="mb-4">Galerie du projet</h3>
+                    <div class="row g-4 g-xl-6">
+                        {% for img_data in additional_images %}
+                            <div class="col-sm-4">
+                                <div class="card h-200px overflow-hidden">
+                                    <picture>
+                                        <source media="(min-width: 768px)" srcset="{{ img_data.urls.medium }}">
+                                        <img src="{{ img_data.urls.small }}" 
+                                             alt="{{ img_data.image.title|default:'Image du projet' }}" 
+                                             class="w-100 h-100 object-fit-cover"
+                                             loading="lazy">
+                                    </picture>
+                                </div>
+                                {% if img_data.image.title %}
+                                    <h6 class="mt-2">{{ img_data.image.title }}</h6>
+                                {% endif %}
+                                {% if img_data.image.description %}
+                                    <p class="small text-muted">{{ img_data.image.description }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Metrics -->
+                {% if project.metrics %}
+                <div class="col-12 mt-6">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <h3>Résultats obtenus</h3>
+                            <div class="row g-3">
+                                {% if project.metrics.page_views_increase %}
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-primary">+{{ project.metrics.page_views_increase }}%</h4>
+                                        <p class="mb-0">Augmentation du trafic</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if project.metrics.conversion_rate_increase %}
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-success">+{{ project.metrics.conversion_rate_increase }}%</h4>
+                                        <p class="mb-0">Taux de conversion</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if project.metrics.seo_score %}
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-info">{{ project.metrics.seo_score }}/100</h4>
+                                        <p class="mb-0">Score SEO</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if project.metrics.performance_score %}
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-warning">{{ project.metrics.performance_score }}/100</h4>
+                                        <p class="mb-0">Performance</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Testimonial -->
+                {% if project.testimonial %}
+                <div class="col-12 mt-6">
+                    <div class="card card-body bg-light p-sm-5">
+                        <h5 class="display-4 opacity-3 text-primary lh-0 mb-0">
+                            <i class="bi bi-quote"></i>
+                        </h5>
+                        <q class="fs-5 heading-color">{{ project.testimonial.quote }}</q>
+                        <div class="d-flex align-items-center mt-4">
+                            {% if project.testimonial.client_photo %}
+                                {% cloudinary_image project.testimonial.client_photo alt=project.testimonial.client_name css_class="avatar avatar-md rounded-circle me-3" width=50 height=50 crop="fill" %}
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ project.testimonial.client_name }}</h6>
+                                {% if project.testimonial.client_position %}
+                                    <small class="text-muted">{{ project.testimonial.client_position }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Projects -->
+    {% if related_projects %}
+    <section class="pt-0">
+        <div class="container">
+            <div class="text-center mb-4 mb-sm-6">
+                <h3 class="mb-0">Projets similaires</h3>
+            </div>
+
+            <div class="row g-4">
+                {% for related_project in related_projects %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-img-scale card-element-hover overflow-hidden">
+                        <div class="card-img-scale-wrapper overflow-hidden">
+                            {% if related_project.featured_image %}
+                                {% cloudinary_url related_project.featured_image width=400 height=300 crop="fill" as image_url %}
+                                <img src="{{ image_url }}" class="card-img" alt="{{ related_project.title }}">
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <a href="{% url 'projects:detail' related_project.slug %}" class="stretched-link">
+                                    {{ related_project.title }}
+                                </a>
+                            </h6>
+                            <p class="mb-2">{{ related_project.description|truncatewords:15 }}</p>
+                            <small class="text-muted">{{ related_project.client.name }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</main>
+{% endblock %}

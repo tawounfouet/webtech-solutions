@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cloudinary_tags %}
+
+{% block title %}Portfolio - Nos projets{% endblock %}
+
+{% block meta_description %}Découvrez nos réalisations et projets clients dans notre portfolio{% endblock %}
+
+{% block content %}
+<main>
+    <!-- Header -->
+    <section class="pt-xl-9">
+        <div class="container pt-4 pt-xl-0">
+            <div class="row">
+                <div class="col-md-8 mx-auto text-center">
+                    <h1 class="mb-4">Notre Portfolio</h1>
+                    <p class="mb-0">Découvrez une sélection de nos projets clients les plus récents, mettant en valeur notre expertise, notre créativité et notre engagement à livrer des résultats exceptionnels.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="pb-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Category filter -->
+                    <div class="d-flex justify-content-center mb-5">
+                        <div class="nav nav-pills" role="tablist">
+                            <a class="nav-link {% if not current_category %}active{% endif %}" 
+                               href="{% url 'projects:list' %}">
+                                Tous les projets
+                            </a>
+                            {% for category in categories %}
+                                <a class="nav-link {% if current_category == category.slug %}active{% endif %}" 
+                                   href="{% url 'projects:list' %}?category={{ category.slug }}">
+                                    {{ category.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="pb-0">
+        <div class="container">
+            {% if projects %}
+                <div class="row g-4 g-lg-5">
+                    {% for project in projects %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card card-img-scale card-element-hover overflow-hidden h-100">
+                            <div class="card-img-scale-wrapper overflow-hidden">
+                                {% if project.featured_image %}
+                                    {% cloudinary_url project.featured_image width=400 height=300 crop="fill" format="auto" quality="auto" as image_url %}
+                                    <img src="{{ image_url }}" class="card-img" alt="{{ project.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <!-- Categories -->
+                                {% if project.categories.exists %}
+                                    <div class="mb-2">
+                                        {% for category in project.categories.all %}
+                                            <span class="badge bg-primary bg-opacity-10 text-primary me-1 mb-1">
+                                                {{ category.name }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Title -->
+                                <h5 class="card-title">
+                                    <a href="{% url 'projects:detail' project.slug %}" class="stretched-link text-decoration-none">
+                                        {{ project.title }}
+                                    </a>
+                                </h5>
+                                
+                                <!-- Description -->
+                                <p class="card-text flex-grow-1">{{ project.description|truncatewords:20 }}</p>
+                                
+                                <!-- Client -->
+                                <div class="d-flex align-items-center mt-auto">
+                                    {% if project.client.logo %}
+                                        {% cloudinary_url project.client.logo width=30 height=30 crop="fill" as client_logo %}
+                                        <img src="{{ client_logo }}" class="avatar avatar-xs rounded-circle me-2" alt="{{ project.client.name }}">
+                                    {% endif %}
+                                    <small class="text-muted">{{ project.client.name }}</small>
+                                    {% if project.is_featured %}
+                                        <span class="badge bg-warning ms-auto">
+                                            <i class="bi bi-star-fill"></i>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <nav aria-label="Navigation des projets">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if current_category %}&category={{ current_category }}{% endif %}">
+                                            <i class="bi bi-chevron-double-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                            <i class="bi bi-chevron-double-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+                <!-- Empty state -->
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <div class="py-5">
+                            <i class="bi bi-folder-x display-1 text-muted mb-3"></i>
+                            <h4>Aucun projet trouvé</h4>
+                            <p class="text-muted">
+                                {% if current_category %}
+                                    Aucun projet n'a été trouvé dans cette catégorie.
+                                    <a href="{% url 'projects:list' %}" class="text-decoration-none">Voir tous les projets</a>
+                                {% else %}
+                                    Aucun projet n'est disponible pour le moment.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Session Security{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-shield-alt me-2"></i>Session Security Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5><i class="fas fa-info-circle text-primary me-2"></i>How We Protect Your Sessions</h5>
+                        <p>We take your account security seriously. Here's how we monitor and protect your sessions:</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="border-start border-primary border-3 ps-3">
+                                <h6><i class="fas fa-eye text-primary me-2"></i>Session Monitoring</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-1"></i> Track IP addresses</li>
+                                    <li><i class="fas fa-check text-success me-1"></i> Monitor geographic locations</li>
+                                    <li><i class="fas fa-check text-success me-1"></i> Record login methods</li>
+                                    <li><i class="fas fa-check text-success me-1"></i> Track session activity</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="border-start border-warning border-3 ps-3">
+                                <h6><i class="fas fa-exclamation-triangle text-warning me-2"></i>Suspicious Activity Detection</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-1"></i> New country logins</li>
+                                    <li><i class="fas fa-check text-success me-1"></i> Multiple IP addresses</li>
+                                    <li><i class="fas fa-check text-success me-1"></i> Unusual browser patterns</li>
+                                    <li><i class="fas fa-check text-success me-1"></i> Rapid location changes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-lightbulb me-2"></i>Security Tips</h6>
+                        <ul class="mb-0">
+                            <li>Regularly review your active sessions</li>
+                            <li>Terminate sessions you don't recognize</li>
+                            <li>Always log out from public computers</li>
+                            <li>Use strong, unique passwords</li>
+                            <li>Enable two-factor authentication when available</li>
+                        </ul>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-desktop fa-2x text-primary mb-2"></i>
+                                    <h6>View Active Sessions</h6>
+                                    <p class="small text-muted">See all devices where you're currently logged in</p>
+                                    <a href="{% url 'authentication:user_sessions' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-list me-1"></i>View Sessions
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-sign-out-alt fa-2x text-danger mb-2"></i>
+                                    <h6>Secure Logout</h6>
+                                    <p class="small text-muted">End all sessions and log out completely</p>
+                                    <a href="#" onclick="confirmLogout()" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Logout Everywhere
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h6><i class="fas fa-question-circle text-info me-2"></i>What Information Do We Collect?</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Information</th>
+                                        <th>Purpose</th>
+                                        <th>Retention</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>IP Address</td>
+                                        <td>Security monitoring and geographic tracking</td>
+                                        <td>30 days after session ends</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Browser Information</td>
+                                        <td>Device identification and suspicious activity detection</td>
+                                        <td>30 days after session ends</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Login Time</td>
+                                        <td>Session management and activity tracking</td>
+                                        <td>30 days after session ends</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Geographic Location</td>
+                                        <td>Security alerts for unusual locations</td>
+                                        <td>30 days after session ends</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'authentication:user_sessions' %}" class="btn btn-primary">
+                            <i class="fas fa-shield-alt me-1"></i>Manage My Sessions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmLogout() {
+    if (confirm('Are you sure you want to log out from all devices? You will need to log in again on all your devices.')) {
+        // Redirect to logout with session termination
+        window.location.href = '{% url "authentication:terminate_all_sessions" %}';
+    }
+}
+</script>
+{% endblock %}

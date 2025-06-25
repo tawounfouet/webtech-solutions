@@ -1,0 +1,123 @@
+/* Styles personnalisés pour la section hero en version mobile */
+
+/* Styles responsives pour h1 - Agrandissement en mobile */
+@media (max-width: 575.98px) {
+  .hero-title {
+    font-size: calc(2rem + 2vw) !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Éviter le saut de ligne pour le typed text en mobile */
+  .hero-title .cd-headline {
+    display: inline !important;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .hero-title .typed {
+    font-size: 0.85em !important;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .hero-title {
+    font-size: calc(2.25rem + 1.5vw) !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Éviter le saut de ligne pour le typed text en mobile */
+  .hero-title .cd-headline {
+    display: inline !important;
+  }
+  
+  .hero-title .typed {
+    font-size: 0.9em !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .hero-title {
+    font-size: calc(2.5rem + 1vw) !important;
+  }
+  
+  /* Contrôle du typed text en version tablet */
+  .hero-title .cd-headline {
+    display: inline !important;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .hero-title .cd-headline {
+    display: inline !important;
+  }
+}
+
+/* Styles pour le contenu hero mobile */
+@media (max-width: 1199.98px) {
+  .hero-content-mobile {
+    text-align: center;
+    padding: 0 1rem;
+  }
+  
+  .hero-content-mobile .typed {
+    font-size: 1.1em !important;
+  }
+  
+  .hero-content-mobile p {
+    font-size: 1.1rem !important;
+    margin-top: 1.5rem !important;
+    text-align: center;
+  }
+  
+  .hero-content-mobile .hero-title {
+    margin-bottom: 1rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hero-content-mobile {
+    text-align: left;
+  }
+  
+  .hero-content-mobile p {
+    text-align: left;
+  }
+}
+
+/* Amélioration du span avec le texte animé */
+@media (max-width: 767.98px) {
+  .hero-content-mobile .cd-headline span {
+    font-size: 0.9em !important;
+    display: block !important;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Masquer le curseur de frappe en version mobile pour éviter le débordement */
+@media (max-width: 767.98px) {
+  /* Masquer le curseur ityped */
+  .ityped-cursor {
+    display: none !important;
+  }
+  
+  /* Alternative : masquer tous les curseurs de frappe potentiels */
+  .typed-cursor,
+  .cursor,
+  .cd-headline .typed::after {
+    display: none !important;
+  }
+  
+  /* Contrôler le conteneur du texte typé */
+  .cd-headline .typed {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Styles alternatifs pour les versions tablet */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .ityped-cursor {
+    color: var(--bs-primary) !important;
+    font-weight: 300 !important;
+  }
+}
