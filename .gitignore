@@ -5,6 +5,15 @@
 .env
 
 .venv/
+venv/
+VENV/
+env/
+ENV/
+venv.bak/
+venv.bak/
+venv3/
+
+
 __pycache__/
 *.pyc
 *.pyo
