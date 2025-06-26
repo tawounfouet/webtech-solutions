@@ -5,7 +5,8 @@
 	<nav class="navbar navbar-expand-xl">
 		<div class="container">
 			<!-- Logo START -->
-			<a class="navbar-brand me-0" href="#">
+			<a class="navbar-brand me-0" href="{% url 'index' %}">
+				{% comment %} <img class="navbar-brand-item" src="{% static 'images/logo-light.svg' %}" alt="logo"> {% endcomment %}
 				<img class="light-mode-item navbar-brand-item" src="{% static 'images/webtech-logo-v2.png' %}" alt="logo" style="height: 50px; width: auto;">
 				<img class="dark-mode-item navbar-brand-item" src="{% static 'images/webtech-logo-v2-white.png' %}" alt="logo" style="height: 50px;"">
 				{% comment %} <img class="dark-mode-item navbar-brand-item" src="{% static 'images/logo-light.svg' %}" alt="logo"> {% endcomment %}
