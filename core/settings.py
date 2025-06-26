@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-ntppzo0p#v4&j@2!6=c3c=$+5-3(%qqlm84tw0!+2h743(i2v@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["webtech-solutions.fr", "www.webtech-solutions.fr", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -155,7 +155,20 @@ else:
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = True if DEBUG else False
 WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds for cache
-WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br']
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = [
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "webp",
+    "zip",
+    "gz",
+    "tgz",
+    "bz2",
+    "tbz",
+    "xz",
+    "br",
+]
 WHITENOISE_MANIFEST_STRICT = False  # Ignore missing files like .map files
 
 
@@ -372,10 +385,10 @@ CKEDITOR_5_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Configuration spécifique pour les uploads CKEditor5 sur Cloudinary
 CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp', 'tiff']
+CKEDITOR_5_UPLOAD_FILE_TYPES = ["jpeg", "jpg", "png", "gif", "bmp", "webp", "tiff"]
 
 # URL personnalisée pour l'upload vers Cloudinary
-CKEDITOR_5_UPLOAD_FILE_VIEW_NAME = 'ckeditor5_upload'
+CKEDITOR_5_UPLOAD_FILE_VIEW_NAME = "ckeditor5_upload"
 
 # Configuration Cloudinary pour CKEditor5
 CKEDITOR_5_CLOUDINARY_STORAGE = True
