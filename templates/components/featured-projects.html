@@ -1,91 +1,91 @@
 {% load static %}
-{% load cloudinary_tags %}
 
-<!-- Case studies START -->
-<section class="bg-light pb-0">
-    <div class="container">
-        <!-- Title -->
-        <div class="inner-container-small mx-auto">
-            <!-- Title -->
-            <div class="text-center mb-6">
-                <h2 class="mb-4">Nos dernières réalisations</h2>
-                <p class="mb-0">Découvrez comment nous avons aidé nos clients à atteindre leurs objectifs grâce à nos solutions innovantes</p>
-            </div>
-        </div>
-        
-        <!-- Projects -->
-        <div class="row g-4 g-lg-5 justify-content-center">
-            <!-- Card item 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-img-scale card-element-hover h-100 overflow-hidden">
-                    <div class="card-img-scale-wrapper overflow-hidden">
-                        {% cloudinary_image "sample" alt="Projet E-commerce" css_class="card-img" width=400 height=300 crop="fill" %}
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <span class="badge bg-primary bg-opacity-10 text-primary mb-2 align-self-start">E-commerce</span>
-                        <h5 class="card-title">
-                            <a href="#" class="stretched-link text-decoration-none">Boutique en ligne moderne</a>
-                        </h5>
-                        <p class="card-text flex-grow-1">Développement d'une plateforme e-commerce complète avec système de paiement intégré et gestion des stocks.</p>
-                        <div class="d-flex align-items-center mt-auto">
-                            <div class="avatar avatar-xs me-2">
-                                {% cloudinary_image "sample" alt="Client Logo" css_class="avatar-img rounded-circle" width=30 height=30 crop="fill" %}
-                            </div>
-                            <small class="text-muted">TechShop France</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<style>
+.card-img-scale-wrapper {
+    height: 250px;
+    overflow: hidden;
+}
 
-            <!-- Card item 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-img-scale card-element-hover h-100 overflow-hidden">
-                    <div class="card-img-scale-wrapper overflow-hidden">
-                        {% cloudinary_image "sample" alt="Application mobile" css_class="card-img" width=400 height=300 crop="fill" %}
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <span class="badge bg-success bg-opacity-10 text-success mb-2 align-self-start">Mobile App</span>
-                        <h5 class="card-title">
-                            <a href="#" class="stretched-link text-decoration-none">Application de livraison</a>
-                        </h5>
-                        <p class="card-text flex-grow-1">Application mobile native pour la livraison de repas avec géolocalisation et notifications push.</p>
-                        <div class="d-flex align-items-center mt-auto">
-                            <div class="avatar avatar-xs me-2">
-                                {% cloudinary_image "sample" alt="Client Logo" css_class="avatar-img rounded-circle" width=30 height=30 crop="fill" %}
-                            </div>
-                            <small class="text-muted">QuickEats</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+.card-img-scale-wrapper .img-scale {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+</style>
 
-            <!-- Card item 3 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-img-scale card-element-hover h-100 overflow-hidden">
-                    <div class="card-img-scale-wrapper overflow-hidden">
-                        {% cloudinary_image "sample" alt="Site vitrine" css_class="card-img" width=400 height=300 crop="fill" %}
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <span class="badge bg-warning bg-opacity-10 text-warning mb-2 align-self-start">Branding</span>
-                        <h5 class="card-title">
-                            <a href="#" class="stretched-link text-decoration-none">Refonte identité visuelle</a>
-                        </h5>
-                        <p class="card-text flex-grow-1">Refonte complète de l'identité visuelle et création d'un site vitrine moderne et responsive.</p>
-                        <div class="d-flex align-items-center mt-auto">
-                            <div class="avatar avatar-xs me-2">
-                                {% cloudinary_image "sample" alt="Client Logo" css_class="avatar-img rounded-circle" width=30 height=30 crop="fill" %}
-                            </div>
-                            <small class="text-muted">Studio Créatif</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Button -->
-        <div class="text-center pt-3">
-            <a href="{% url 'projects:list' %}" class="btn btn-lg btn-dark mb-5">Découvrir tous nos projets</a>
-        </div>
-    </div>
+<!-- =======================
+Case studies START -->
+<section class="bg-light pb-6 pt-6">
+	<div class="container">
+		<!-- Title -->
+		<div class="inner-container-small mx-auto">
+			<!-- Title -->
+			<div class="text-center mb-6">
+				<h2 class="mb-">Études de cas</h2>
+				<p class="mb-0">Découvrez une sélection de nos projets clients les plus récents, mettant en avant notre expertise, notre créativité et notre engagement à livrer des résultats exceptionnels.</p>
+			</div>
+		</div>
+		
+		<!-- Projects -->
+		<div class="row g-4 g-lg-5 justify-content-center">
+			{% for project in featured_projects %}
+			<!-- Card item -->
+			<div class="col-md-6 col-lg-4">
+				<div class="card card-img-scale card-element-hover overflow-hidden">
+					<!-- Card image -->
+					<div class="card-img-scale-wrapper">
+						<!-- Hover elements -->
+						<div class="card-img-overlay hover-element d-flex align-items-center justify-content-center">
+							<!-- Client logo or name -->
+							{% if project.client.logo_white_thumbnail %}
+								<img src="{{ project.client.logo_white_thumbnail.url }}" class="h-40px z-index-2" alt="{{ project.client.name }} logo">
+							{% elif project.client.logo_white %}
+								<img src="{{ project.client.logo_white.url }}" class="h-40px z-index-2" alt="{{ project.client.name }} logo">
+							{% else %}
+								<h5 class="text-white text-center z-index-2 mb-0">{{ project.client.name }}</h5>
+							{% endif %}
+							<!-- BG overlay -->
+							<div class="bg-overlay bg-dark opacity-7"></div>
+						</div>
+						<!-- Case studie image -->
+						{% if project.thumbnail %}
+							<img src="{{ project.thumbnail.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
+						{% elif project.featured_image %}
+							<img src="{{ project.featured_image.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
+						{% else %}
+							<img src="{% static 'images/portfolio/placeholder.jpg' %}" class="img-scale card-img-top" alt="{{ project.title }}">
+						{% endif %}
+					</div>
+
+					<div class="card-body">
+						<h6 class="card-title mb-2">{{ project.title }}</h6>
+						<p class="card-text mb-3">{{ project.description|truncatewords:15 }}</p>
+						<!-- Badge list -->
+						<div class="hstack flex-wrap gap-2 mb-4">
+							{% for category in project.categories.all %}
+								<div class="badge border text-white" style="background-color: {{ category.color }};">{{ category.name }}</div>
+							{% endfor %}
+						</div>
+						<!-- Button -->
+						<a href="{% url 'projects:detail' project.slug %}" class="text-primary-hover stretched-link heading-color mb-0">Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i></a>
+					</div>
+				</div>
+			</div>
+			{% empty %}
+			<!-- Message si aucun projet -->
+			<div class="col-12 text-center">
+				<p class="text-muted">Aucun projet mis en avant disponible pour le moment.</p>
+			</div>
+			{% endfor %}
+		</div>
+		<!-- Button -->
+		<div class="text-center pt-6">
+			<a href="{% url 'projects:list' %}" class="btn btn-lg btn-dark mb-0">Explorer toutes nos études de cas</a>
+		</div>
+	</div>
+
+
 </section>
-<!-- Case studies END -->
+<!-- =======================
+Case studies END -->

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # Third party apps
     "cloudinary_storage",
     "cloudinary",
+    "django_ckeditor_5",
     # Local apps
     "authentication",
     "content",
@@ -235,3 +236,134 @@ except ImportError:
 
 # Cloudinary URL pour les medias
 CLOUDINARY_URL = f"cloudinary://{os.getenv('CLOUDINARY_API_KEY')}:{os.getenv('CLOUDINARY_API_SECRET')}@{os.getenv('CLOUDINARY_CLOUD_NAME')}"
+
+# CKEditor 5 Configuration
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "blockQuote",
+            "insertTable",
+            "|",
+            "undo",
+            "redo",
+        ],
+        "height": 300,
+        "width": "100%",
+    },
+    "extends": {
+        "blockToolbar": [
+            "paragraph",
+            "heading1",
+            "heading2",
+            "heading3",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "blockQuote",
+            "uploadImage",
+        ],
+        "toolbar": [
+            "heading",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "underline",
+            "strikethrough",
+            "code",
+            "subscript",
+            "superscript",
+            "highlight",
+            "|",
+            "codeBlock",
+            "sourceEditing",
+            "uploadImage",
+            "bulletedList",
+            "numberedList",
+            "todoList",
+            "|",
+            "blockQuote",
+            "insertTable",
+            "|",
+            "fontSize",
+            "fontFamily",
+            "fontColor",
+            "fontBackgroundColor",
+            "mediaEmbed",
+            "removeFormat",
+            "|",
+            "undo",
+            "redo",
+        ],
+        "image": {
+            "toolbar": [
+                "imageTextAlternative",
+                "|",
+                "imageStyle:alignLeft",
+                "imageStyle:alignRight",
+                "imageStyle:alignCenter",
+                "imageStyle:side",
+                "|",
+            ],
+            "styles": [
+                "full",
+                "side",
+                "alignLeft",
+                "alignRight",
+                "alignCenter",
+            ],
+        },
+        "table": {
+            "contentToolbar": [
+                "tableColumn",
+                "tableRow",
+                "mergeTableCells",
+            ],
+            "tableToolbar": [
+                "comment",
+                "tableColumn",
+                "tableRow",
+                "mergeTableCells",
+            ],
+        },
+        "height": 400,
+        "width": "100%",
+    },
+    "list": {
+        "properties": {
+            "styles": "true",
+            "startIndex": "true",
+            "reversed": "true",
+        }
+    },
+}
+
+# Upload settings for CKEditor 5
+CKEDITOR_5_UPLOAD_PATH = "ckeditor5/uploads/"
+CKEDITOR_5_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# Configuration spécifique pour les uploads CKEditor5 sur Cloudinary
+CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp', 'tiff']
+
+# URL personnalisée pour l'upload vers Cloudinary
+CKEDITOR_5_UPLOAD_FILE_VIEW_NAME = 'ckeditor5_upload'
+
+# Configuration Cloudinary pour CKEditor5
+CKEDITOR_5_CLOUDINARY_STORAGE = True

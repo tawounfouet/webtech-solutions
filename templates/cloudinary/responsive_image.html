@@ -1,7 +1,0 @@
-{% if image_url %}
-<picture>
-    <source media="(min-width: 1200px)" srcset="{{ sizes.large }}">
-    <source media="(min-width: 768px)" srcset="{{ sizes.medium }}">
-    <img src="{{ sizes.small }}" alt="{{ alt }}" class="{{ css_class }}" loading="lazy">
-</picture>
-{% endif %}

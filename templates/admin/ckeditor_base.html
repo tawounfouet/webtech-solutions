@@ -1,0 +1,121 @@
+{% extends "admin/base.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        /* Améliorer l'apparence de CKEditor dans l'admin */
+        .ck-editor__editable {
+            min-height: 300px;
+        }
+        
+        .ck-editor__editable.ck-focused {
+            border-color: #007cba;
+            box-shadow: 0 0 0 1px #007cba;
+        }
+        
+        /* Style pour les images dans l'éditeur */
+        .ck-content .image {
+            margin: 1em 0;
+        }
+        
+        .ck-content .image.image_resized {
+            max-width: 100%;
+            display: block;
+        }
+        
+        .ck-content .image.image-style-side {
+            float: right;
+            margin-left: 1.5em;
+            max-width: 50%;
+        }
+        
+        .ck-content .image.image-style-align-left {
+            float: left;
+            margin-right: 1.5em;
+        }
+        
+        .ck-content .image.image-style-align-center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .ck-content .image.image-style-align-right {
+            float: right;
+            margin-left: 1.5em;
+        }
+        
+        /* Style pour les tableaux */
+        .ck-content .table {
+            margin: 1em 0;
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            border: 1px solid #bfbfbf;
+        }
+        
+        .ck-content .table td,
+        .ck-content .table th {
+            border: 1px solid #bfbfbf;
+            padding: 0.4em;
+        }
+        
+        .ck-content .table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        /* Style pour les citations */
+        .ck-content blockquote {
+            border-left: 5px solid #ccc;
+            font-style: italic;
+            margin-left: 0;
+            margin-right: 0;
+            overflow: hidden;
+            padding-left: 1.5em;
+            padding-right: 1.5em;
+        }
+        
+        /* Style pour le code */
+        .ck-content code {
+            background-color: #f3f3f3;
+            border-radius: 2px;
+            color: #353535;
+            direction: ltr;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 0.15em;
+        }
+        
+        .ck-content pre {
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            color: #353535;
+            direction: ltr;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin: 1em 0;
+            overflow-x: auto;
+            padding: 1em;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration spécifique pour l'upload vers Cloudinary
+            if (typeof django !== 'undefined' && django.jQuery) {
+                django.jQuery(document).ready(function($) {
+                    // Ajouter des informations de debug pour l'upload
+                    window.CKEDITOR_5_UPLOAD_URL = '/ckeditor5/upload/';
+                    
+                    console.log('CKEditor5 configuré pour utiliser Cloudinary');
+                });
+            }
+        });
+    </script>
+{% endblock %}

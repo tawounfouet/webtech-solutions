@@ -2,11 +2,16 @@ from django.db import models
 from django.utils.text import slugify
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 from cloudinary.models import CloudinaryField
+from django_ckeditor_5.fields import CKEditor5Field
+import cloudinary
+import logging
 
 # from django.contrib.auth.models import User
 # Importing User model from Django settings to ensure compatibility with custom user models
 # from django settings import AUTH_USER_MODEL
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 User = settings.AUTH_USER_MODEL
 
@@ -16,7 +21,7 @@ class ProjectCategory(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    description = models.TextField(blank=True)
+    description = CKEditor5Field('Description', config_name='default', blank=True)
     color = models.CharField(
         max_length=7, default="#6c757d", help_text="Code couleur hexadécimal"
     )
@@ -42,22 +47,87 @@ class Client(models.Model):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
+    
+    # Cloudinary public_id pour référence et suppression
+    logo_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
+    logo_white_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
+    
+    # Version originale du logo
     logo = CloudinaryField(
-        "image",
-        folder="clients/logos",
-        blank=True,
+        "client_logo",
+        resource_type="image",
+        folder="clients/logos/original",
         null=True,
-        help_text="Logo du client (upload automatique vers Cloudinary)",
+        blank=True,
     )
+    
+    # Version pour affichage principal
+    logo_large = CloudinaryField(
+        "client_logo_large",
+        resource_type="image",
+        folder="clients/logos/large",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 400, "crop": "limit"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
+    # Version miniature du logo
+    logo_thumbnail = CloudinaryField(
+        "client_logo_thumbnail",
+        resource_type="image",
+        folder="clients/logos/thumbnails",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 150, "height": 150, "crop": "fit"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
+    # Version originale du logo blanc
     logo_white = CloudinaryField(
-        "image",
-        folder="clients/logos/white",
-        blank=True,
+        "client_logo_white",
+        resource_type="image",
+        folder="clients/logos/white/original",
         null=True,
-        help_text="Version blanche du logo (upload automatique vers Cloudinary)",
+        blank=True,
     )
+    
+    # Version pour affichage principal du logo blanc
+    logo_white_large = CloudinaryField(
+        "client_logo_white_large",
+        resource_type="image",
+        folder="clients/logos/white/large",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 400, "crop": "limit"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
+    # Version miniature du logo blanc
+    logo_white_thumbnail = CloudinaryField(
+        "client_logo_white_thumbnail",
+        resource_type="image",
+        folder="clients/logos/white/thumbnails",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 150, "height": 150, "crop": "fit"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
     website = models.URLField(blank=True)
-    description = models.TextField(blank=True)
+    description = CKEditor5Field('Description', config_name='default', blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -71,6 +141,75 @@ class Client(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Supprimer les images Cloudinary lors de la suppression du client"""
+        if self.logo_cloudinary_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    self.logo_cloudinary_public_id, resource_type="image"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Erreur lors de la suppression du logo Cloudinary: {str(e)}"
+                )
+        
+        if self.logo_white_cloudinary_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    self.logo_white_cloudinary_public_id, resource_type="image"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Erreur lors de la suppression du logo blanc Cloudinary: {str(e)}"
+                )
+        super().delete(*args, **kwargs)
+
+    @property
+    def logo_urls(self):
+        """Retourne un dictionnaire avec les URL des différentes versions du logo"""
+        urls = {"original": "", "large": "", "thumbnail": ""}
+
+        # URL du logo original
+        if hasattr(self, "logo") and self.logo:
+            urls["original"] = self.logo.url
+
+        # URL du logo large
+        if hasattr(self, "logo_large") and self.logo_large:
+            urls["large"] = self.logo_large.url
+        elif urls["original"]:
+            urls["large"] = urls["original"]
+
+        # URL de la miniature du logo
+        if hasattr(self, "logo_thumbnail") and self.logo_thumbnail:
+            urls["thumbnail"] = self.logo_thumbnail.url
+        elif urls["original"]:
+            urls["thumbnail"] = urls["original"]
+
+        return urls
+
+    @property
+    def logo_white_urls(self):
+        """Retourne un dictionnaire avec les URL des différentes versions du logo blanc"""
+        urls = {"original": "", "large": "", "thumbnail": ""}
+
+        # URL du logo blanc original
+        if hasattr(self, "logo_white") and self.logo_white:
+            urls["original"] = self.logo_white.url
+
+        # URL du logo blanc large
+        if hasattr(self, "logo_white_large") and self.logo_white_large:
+            urls["large"] = self.logo_white_large.url
+        elif urls["original"]:
+            urls["large"] = urls["original"]
+
+        # URL de la miniature du logo blanc
+        if hasattr(self, "logo_white_thumbnail") and self.logo_white_thumbnail:
+            urls["thumbnail"] = self.logo_white_thumbnail.url
+        elif urls["original"]:
+            urls["thumbnail"] = urls["original"]
+
+        return urls
 
     def __str__(self):
         return self.name
@@ -95,7 +234,7 @@ class Project(models.Model):
         max_length=300, blank=True, help_text="Sous-titre du projet"
     )
     description = models.TextField(help_text="Description courte pour les cartes")
-    content = models.TextField(blank=True, help_text="Contenu détaillé du case study")
+    content = CKEditor5Field('Content', config_name='extends', blank=True, help_text="Contenu détaillé du case study")
 
     # Relations
     client = models.ForeignKey(
@@ -107,31 +246,44 @@ class Project(models.Model):
     )
 
     # Images
+    # Cloudinary public_id pour référence et suppression
+    featured_image_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
+    
+    # Version originale de l'image principale
     featured_image = CloudinaryField(
-        "image",
-        folder="projects/featured",
-        help_text="Image principale du projet (upload automatique vers Cloudinary)",
-        transformation={
-            "quality": "auto",
-            "fetch_format": "auto",
-            "width": 1200,
-            "height": 800,
-            "crop": "fill",
-        },
-    )
-    thumbnail = CloudinaryField(
-        "image",
-        folder="projects/thumbnails",
-        blank=True,
+        "project_featured_image",
+        resource_type="image",
+        folder="projects/featured/original",
         null=True,
-        help_text="Miniature du projet (générée automatiquement si vide)",
-        transformation={
-            "quality": "auto",
-            "fetch_format": "auto",
-            "width": 400,
-            "height": 300,
-            "crop": "fill",
-        },
+        blank=True,
+    )
+    
+    # Version pour affichage principal (page de détail)
+    featured_image_large = CloudinaryField(
+        "project_featured_image_large",
+        resource_type="image",
+        folder="projects/featured/large",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 1200, "height": 800, "crop": "fill"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
+    # Version pour les listes/grilles de projets
+    thumbnail = CloudinaryField(
+        "project_featured_image_thumbnail",
+        resource_type="image",
+        folder="projects/featured/thumbnails",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 400, "height": 300, "crop": "fill"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
     )
 
     # Métadonnées
@@ -173,25 +325,39 @@ class Project(models.Model):
         return self.categories.all()
 
     @property
+    def featured_image_urls(self):
+        """Retourne un dictionnaire avec les URL des différentes versions de l'image principale"""
+        urls = {"original": "", "large": "", "thumbnail": ""}
+
+        # URL de l'image originale
+        if hasattr(self, "featured_image") and self.featured_image:
+            urls["original"] = self.featured_image.url
+
+        # URL de l'image large
+        if hasattr(self, "featured_image_large") and self.featured_image_large:
+            urls["large"] = self.featured_image_large.url
+        elif urls["original"]:
+            urls["large"] = urls["original"]
+
+        # URL de la vignette
+        if hasattr(self, "thumbnail") and self.thumbnail:
+            urls["thumbnail"] = self.thumbnail.url
+        elif urls["original"]:
+            urls["thumbnail"] = urls["original"]
+
+        return urls
+
+    @property
     def featured_image_url(self):
-        """Retourne l'URL optimisée de l'image principale"""
-        if self.featured_image:
-            return str(self.featured_image)
-        return None
+        """Retourne l'URL optimisée de l'image principale (compatibilité)"""
+        image_urls = self.featured_image_urls
+        return image_urls["large"] or image_urls["original"]
 
     @property
     def thumbnail_url(self):
-        """Retourne l'URL de la miniature ou génère une miniature depuis l'image principale"""
-        if self.thumbnail:
-            return str(self.thumbnail)
-        elif self.featured_image:
-            # Génère automatiquement une miniature depuis l'image principale
-            from cloudinary import CloudinaryImage
-
-            return CloudinaryImage(str(self.featured_image)).build_url(
-                width=400, height=300, crop="fill", quality="auto", fetch_format="auto"
-            )
-        return None
+        """Retourne l'URL de la miniature (compatibilité)"""
+        image_urls = self.featured_image_urls
+        return image_urls["thumbnail"] or image_urls["original"]
 
     def get_gallery_images(self):
         """Retourne toutes les images de la galerie ordonnées"""
@@ -200,12 +366,71 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-
-        # Auto-génération de la miniature si elle n'existe pas
-        if self.featured_image and not self.thumbnail:
-            self.thumbnail = self.featured_image
-
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Supprimer les images Cloudinary lors de la suppression du projet"""
+        if self.featured_image_cloudinary_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    self.featured_image_cloudinary_public_id, resource_type="image"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Erreur lors de la suppression de l'image principale Cloudinary: {str(e)}"
+                )
+        super().delete(*args, **kwargs)
+
+    def generate_image_versions(self):
+        """
+        Génère les versions optimisées de l'image principale
+        """
+        if not self.featured_image:
+            return False
+        
+        try:
+            # Générer la version large
+            large_result = cloudinary.uploader.upload(
+                self.featured_image.url,
+                folder="projects/featured/large",
+                public_id=f"{self.slug}_large",
+                transformation=[
+                    {"width": 1200, "height": 800, "crop": "fill"},
+                    {"quality": "auto"},
+                    {"fetch_format": "auto"},
+                ],
+                overwrite=True
+            )
+            
+            # Générer la version thumbnail
+            thumb_result = cloudinary.uploader.upload(
+                self.featured_image.url,
+                folder="projects/featured/thumbnails",
+                public_id=f"{self.slug}_thumb", 
+                transformation=[
+                    {"width": 400, "height": 300, "crop": "fill"},
+                    {"quality": "auto"},
+                    {"fetch_format": "auto"},
+                ],
+                overwrite=True
+            )
+            
+            # Mettre à jour les champs
+            self.featured_image_large = large_result['secure_url']
+            self.thumbnail = thumb_result['secure_url']
+            
+            # Sauvegarder le public_id original si pas déjà fait
+            if not self.featured_image_cloudinary_public_id:
+                self.featured_image_cloudinary_public_id = self.featured_image.public_id
+            
+            self.save(update_fields=['featured_image_large', 'thumbnail', 'featured_image_cloudinary_public_id'])
+            
+            logger.info(f"Versions d'images générées pour: {self.title}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erreur lors de la génération des versions: {str(e)}")
+            return False
 
 
 class ProjectImage(models.Model):
@@ -214,20 +439,49 @@ class ProjectImage(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="images"
     )
+    
+    # Cloudinary public_id pour référence et suppression
+    image_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
+    
+    # Version originale de l'image
     image = CloudinaryField(
-        "image",
-        folder="projects/gallery",
-        help_text="Image de galerie (upload automatique vers Cloudinary)",
-        transformation={
-            "quality": "auto",
-            "fetch_format": "auto",
-            "width": 1200,
-            "height": 800,
-            "crop": "limit",
-        },
+        "project_gallery_image",
+        resource_type="image",
+        folder="projects/gallery/original",
+        null=True,
+        blank=True,
     )
+    
+    # Version pour affichage principal
+    image_large = CloudinaryField(
+        "project_gallery_image_large",
+        resource_type="image",
+        folder="projects/gallery/large",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 1200, "height": 800, "crop": "limit"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
+    # Version miniature
+    image_thumbnail = CloudinaryField(
+        "project_gallery_image_thumbnail",
+        resource_type="image",
+        folder="projects/gallery/thumbnails",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 300, "height": 200, "crop": "fill"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
     title = models.CharField(max_length=200, blank=True)
-    description = models.TextField(blank=True)
+    description = CKEditor5Field('Description', config_name='default', blank=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -240,25 +494,51 @@ class ProjectImage(models.Model):
         return f"{self.project.title} - Image {self.order}"
 
     @property
+    def image_urls(self):
+        """Retourne un dictionnaire avec les URL des différentes versions de l'image"""
+        urls = {"original": "", "large": "", "thumbnail": ""}
+
+        # URL de l'image originale
+        if hasattr(self, "image") and self.image:
+            urls["original"] = self.image.url
+
+        # URL de l'image large
+        if hasattr(self, "image_large") and self.image_large:
+            urls["large"] = self.image_large.url
+        elif urls["original"]:
+            urls["large"] = urls["original"]
+
+        # URL de la vignette
+        if hasattr(self, "image_thumbnail") and self.image_thumbnail:
+            urls["thumbnail"] = self.image_thumbnail.url
+        elif urls["original"]:
+            urls["thumbnail"] = urls["original"]
+
+        return urls
+
+    @property
     def image_url(self):
-        """Retourne l'URL de l'image"""
-        if self.image:
-            return str(self.image)
-        return None
+        """Retourne l'URL de l'image (compatibilité)"""
+        image_urls = self.image_urls
+        return image_urls["large"] or image_urls["original"]
 
     def get_thumbnail_url(self, width=300, height=200):
-        """Génère une URL de miniature avec dimensions personnalisées"""
-        if self.image:
-            from cloudinary import CloudinaryImage
+        """Génère une URL de miniature avec dimensions personnalisées (compatibilité)"""
+        image_urls = self.image_urls
+        return image_urls["thumbnail"] or image_urls["original"]
 
-            return CloudinaryImage(str(self.image)).build_url(
-                width=width,
-                height=height,
-                crop="fill",
-                quality="auto",
-                fetch_format="auto",
-            )
-        return None
+    def delete(self, *args, **kwargs):
+        """Supprimer les images Cloudinary lors de la suppression de l'image"""
+        if self.image_cloudinary_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    self.image_cloudinary_public_id, resource_type="image"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Erreur lors de la suppression de l'image de galerie Cloudinary: {str(e)}"
+                )
+        super().delete(*args, **kwargs)
 
 
 class ProjectTeamMember(models.Model):
@@ -289,21 +569,47 @@ class ProjectTestimonial(models.Model):
     )
     client_name = models.CharField(max_length=200)
     client_position = models.CharField(max_length=200, blank=True)
+    
+    # Cloudinary public_id pour référence et suppression
+    client_photo_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
+    
+    # Version originale de la photo client
     client_photo = CloudinaryField(
-        "image",
-        folder="testimonials",
-        blank=True,
+        "testimonial_client_photo",
+        resource_type="image",
+        folder="testimonials/original",
         null=True,
-        help_text="Photo du client (upload automatique vers Cloudinary)",
-        transformation={
-            "quality": "auto",
-            "fetch_format": "auto",
-            "width": 150,
-            "height": 150,
-            "crop": "fill",
-            "gravity": "face",
-        },
+        blank=True,
     )
+    
+    # Version pour affichage principal
+    client_photo_large = CloudinaryField(
+        "testimonial_client_photo_large",
+        resource_type="image",
+        folder="testimonials/large",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 200, "height": 200, "crop": "fill", "gravity": "face"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
+    # Version miniature
+    client_photo_thumbnail = CloudinaryField(
+        "testimonial_client_photo_thumbnail",
+        resource_type="image",
+        folder="testimonials/thumbnails",
+        null=True,
+        blank=True,
+        transformation=[
+            {"width": 80, "height": 80, "crop": "fill", "gravity": "face"},
+            {"quality": "auto"},
+            {"fetch_format": "auto"},
+        ],
+    )
+    
     quote = models.TextField()
     rating = models.PositiveIntegerField(
         choices=[(i, i) for i in range(1, 6)], default=5
@@ -317,6 +623,42 @@ class ProjectTestimonial(models.Model):
 
     def __str__(self):
         return f"Témoignage de {self.client_name} pour {self.project.title}"
+
+    @property
+    def client_photo_urls(self):
+        """Retourne un dictionnaire avec les URL des différentes versions de la photo client"""
+        urls = {"original": "", "large": "", "thumbnail": ""}
+
+        # URL de la photo originale
+        if hasattr(self, "client_photo") and self.client_photo:
+            urls["original"] = self.client_photo.url
+
+        # URL de la photo large
+        if hasattr(self, "client_photo_large") and self.client_photo_large:
+            urls["large"] = self.client_photo_large.url
+        elif urls["original"]:
+            urls["large"] = urls["original"]
+
+        # URL de la vignette
+        if hasattr(self, "client_photo_thumbnail") and self.client_photo_thumbnail:
+            urls["thumbnail"] = self.client_photo_thumbnail.url
+        elif urls["original"]:
+            urls["thumbnail"] = urls["original"]
+
+        return urls
+
+    def delete(self, *args, **kwargs):
+        """Supprimer les images Cloudinary lors de la suppression du témoignage"""
+        if self.client_photo_cloudinary_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    self.client_photo_cloudinary_public_id, resource_type="image"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Erreur lors de la suppression de la photo client Cloudinary: {str(e)}"
+                )
+        super().delete(*args, **kwargs)
 
 
 class ProjectMetrics(models.Model):

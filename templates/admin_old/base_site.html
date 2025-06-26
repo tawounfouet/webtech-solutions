@@ -1,0 +1,113 @@
+{% extends "admin/base.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% url 'admin:jsi18n' %}">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/custom_admin.css">
+    <style>
+        /* Styles inline pour une meilleure intégration */
+        .dashboard-module {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-module h2 {
+            background: linear-gradient(135deg, #007cba 0%, #0073aa 100%);
+            color: white;
+            margin: 0;
+            padding: 12px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .dashboard-module .module-content {
+            padding: 20px;
+        }
+        
+        /* Amélioration des icônes */
+        .model-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        /* Style pour les statistiques rapides */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .stats-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007cba;
+            display: block;
+        }
+        
+        .stats-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+    
+    <!-- Ajout de JavaScript pour améliorer l'UX -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation pour les badges de statut
+        const statusBadges = document.querySelectorAll('.status-badge');
+        statusBadges.forEach(badge => {
+            badge.style.animation = 'fadeIn 0.5s ease-in';
+        });
+        
+        // Tooltip pour les images
+        const images = document.querySelectorAll('.image-preview');
+        images.forEach(img => {
+            img.addEventListener('mouseenter', function() {
+                this.style.zIndex = '1000';
+                this.style.position = 'relative';
+            });
+            
+            img.addEventListener('mouseleave', function() {
+                this.style.zIndex = '';
+                this.style.position = '';
+            });
+        });
+        
+        // Amélioration des sélecteurs de couleur
+        const colorInputs = document.querySelectorAll('input[type="color"]');
+        colorInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const preview = this.nextElementSibling;
+                if (preview && preview.classList.contains('color-preview')) {
+                    preview.style.backgroundColor = this.value;
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

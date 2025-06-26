@@ -1,0 +1,131 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <div id="content-main">
+        
+        <!-- Statistiques rapides -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <span class="stats-number">{{ stats.total_projects }}</span>
+                <span class="stats-label">Projets totaux</span>
+            </div>
+            <div class="stats-card">
+                <span class="stats-number">{{ stats.published_projects }}</span>
+                <span class="stats-label">Projets publiés</span>
+            </div>
+            <div class="stats-card">
+                <span class="stats-number">{{ stats.featured_projects }}</span>
+                <span class="stats-label">Projets mis en avant</span>
+            </div>
+            <div class="stats-card">
+                <span class="stats-number">{{ stats.total_clients }}</span>
+                <span class="stats-label">Clients actifs</span>
+            </div>
+            <div class="stats-card">
+                <span class="stats-number">{{ stats.total_categories }}</span>
+                <span class="stats-label">Catégories</span>
+            </div>
+            <div class="stats-card">
+                <span class="stats-number">{{ stats.total_images }}</span>
+                <span class="stats-label">Images de galerie</span>
+            </div>
+        </div>
+
+        <!-- Projets récents -->
+        {% if recent_projects %}
+        <div class="dashboard-module">
+            <h2>
+                <svg class="model-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                    <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                </svg>
+                Projets récents
+            </h2>
+            <div class="module-content">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Projet</th>
+                            <th>Client</th>
+                            <th>Statut</th>
+                            <th>Créé le</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in recent_projects %}
+                        <tr>
+                            <td>
+                                <strong>{{ project.title }}</strong>
+                                {% if project.subtitle %}
+                                    <br><small style="color: #666;">{{ project.subtitle }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ project.client.name }}</td>
+                            <td>
+                                <span class="status-badge" style="background-color: 
+                                    {% if project.status == 'draft' %}#6c757d
+                                    {% elif project.status == 'in_progress' %}#ffc107
+                                    {% elif project.status == 'completed' %}#28a745
+                                    {% elif project.status == 'on_hold' %}#fd7e14
+                                    {% elif project.status == 'cancelled' %}#dc3545
+                                    {% endif %}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
+                                    {{ project.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ project.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'admin:projects_project_change' project.pk %}" class="admin-link">
+                                    Modifier
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Répartition par statut -->
+        {% if project_status_stats %}
+        <div class="dashboard-module">
+            <h2>
+                <svg class="model-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                Répartition des projets par statut
+            </h2>
+            <div class="module-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    {% for status, count in project_status_stats.items %}
+                    <div style="text-align: center; padding: 15px; border: 1px solid #dee2e6; border-radius: 8px;">
+                        <div style="font-size: 1.5em; font-weight: bold; color: 
+                            {% if status == 'draft' %}#6c757d
+                            {% elif status == 'in_progress' %}#ffc107
+                            {% elif status == 'completed' %}#28a745
+                            {% elif status == 'on_hold' %}#fd7e14
+                            {% elif status == 'cancelled' %}#dc3545
+                            {% endif %};">
+                            {{ count }}
+                        </div>
+                        <div style="font-size: 0.9em; color: #666; text-transform: capitalize;">
+                            {% if status == 'draft' %}Brouillons
+                            {% elif status == 'in_progress' %}En cours
+                            {% elif status == 'completed' %}Terminés
+                            {% elif status == 'on_hold' %}En pause
+                            {% elif status == 'cancelled' %}Annulés
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Contenu de l'admin par défaut -->
+        {{ block.super }}
+    </div>
+{% endblock %}

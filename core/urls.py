@@ -17,12 +17,25 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
+from .ckeditor_cloudinary import ckeditor_upload_file, test_cloudinary_config
+from .ckeditor5_views import upload_file as ckeditor5_upload
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("authentication.urls")),
     path("projects/", include("projects.urls")),
+    # URL personnalisée pour l'upload CKEditor5 (doit être avant l'inclusion de ckeditor5)
+    path("ckeditor5/image_upload/", ckeditor5_upload, name='ckeditor5_upload_override'),
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
+    path("ckeditor5/upload/", ckeditor_upload_file, name='ckeditor5_upload'),
+    path("test-cloudinary/", test_cloudinary_config, name='test_cloudinary'),
     path("", views.index, name="index"),
 ]
+
+# Ajouter les fichiers media en développement
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

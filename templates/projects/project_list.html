@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% load static %}
-{% load cloudinary_tags %}
+
+<style>
+.card-img-scale-wrapper {
+    height: 250px;
+    overflow: hidden;
+}
+
+.card-img-scale-wrapper .img-scale {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+</style>
 
 {% block title %}Portfolio - Nos projets{% endblock %}
 
@@ -9,36 +22,82 @@
 {% block content %}
 <main>
     <!-- Header -->
-    <section class="pt-xl-9">
+    <section class="pt-xl-9 bg-dark" data-bs-theme="dark">
         <div class="container pt-4 pt-xl-0">
             <div class="row">
-                <div class="col-md-8 mx-auto text-center">
-                    <h1 class="mb-4">Notre Portfolio</h1>
-                    <p class="mb-0">Découvrez une sélection de nos projets clients les plus récents, mettant en valeur notre expertise, notre créativité et notre engagement à livrer des résultats exceptionnels.</p>
+                <div class="col-md-10 col-lg-8 mx-auto text-center">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="mb-4">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}" class="text-white-50">Accueil</a></li>
+                            <li class="breadcrumb-item active text-white">Portfolio</li>
+                        </ol>
+                    </nav>
+                    
+                    <h1 class="display-4 text-white mb-4">Notre Portfolio</h1>
+                    <p class="lead text-white-75 mb-0">Découvrez une sélection de nos projets clients les plus récents, mettant en valeur notre expertise, notre créativité et notre engagement à livrer des résultats exceptionnels.</p>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Decorative wave -->
+        <div class="position-relative">
+            <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden">
+                <svg class="fill-light" width="100%" height="50" viewBox="0 0 500 50" preserveAspectRatio="none">
+                    <path d="M0,50 Q250,0 500,50 L500,50 L0,50 Z"></path>
+                </svg>
             </div>
         </div>
     </section>
 
     <!-- Filters -->
-    <section class="pb-0">
+    <section class="bg-light py-4">
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <!-- Category filter -->
-                    <div class="d-flex justify-content-center mb-5">
-                        <div class="nav nav-pills" role="tablist">
-                            <a class="nav-link {% if not current_category %}active{% endif %}" 
-                               href="{% url 'projects:list' %}">
-                                Tous les projets
-                            </a>
-                            {% for category in categories %}
-                                <a class="nav-link {% if current_category == category.slug %}active{% endif %}" 
-                                   href="{% url 'projects:list' %}?category={{ category.slug }}">
-                                    {{ category.name }}
-                                </a>
-                            {% endfor %}
+                    <!-- Title and description -->
+                    <div class="text-center mb-4">
+                        <h3 class="mb-2">Explorez nos réalisations</h3>
+                        <p class="text-muted mb-3">Filtrez par catégorie pour découvrir nos projets dans votre domaine d'intérêt</p>
+                    </div>
+                    
+                    <!-- Enhanced Category filter -->
+                    <div class="d-flex justify-content-center">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body px-4 py-3">
+                                <div id="category-filters" class="nav nav-pills nav-pills-primary justify-content-center flex-wrap gap-2" role="tablist">
+                                    <a class="nav-link {% if not current_category %}active{% endif %} px-4 py-2" 
+                                       href="{% url 'projects:list' %}"
+                                       data-category="">
+                                        <i class="bi bi-grid-3x3-gap me-2"></i>Tous les projets
+                                    </a>
+                                    {% for category in categories %}
+                                        <a class="nav-link {% if current_category == category.slug %}active{% endif %} px-4 py-2" 
+                                           href="{% url 'projects:list' %}?category={{ category.slug }}"
+                                           data-category="{{ category.slug }}"
+                                           data-color="{{ category.color }}"
+                                           data-name="{{ category.name }}">
+                                            {{ category.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    
+                    <!-- Projects count -->
+                    <div id="projects-count" class="text-center mt-3">
+                        <small class="text-muted">
+                            {% if current_category %}
+                                {% with projects|length as count %}
+                                    {{ count }} projet{{ count|pluralize }} dans la catégorie "{% for category in categories %}{% if category.slug == current_category %}{{ category.name }}{% endif %}{% endfor %}"
+                                {% endwith %}
+                            {% else %}
+                                {% with projects|length as count %}
+                                    {{ count }} projet{{ count|pluralize }} au total
+                                {% endwith %}
+                            {% endif %}
+                        </small>
                     </div>
                 </div>
             </div>
@@ -46,58 +105,49 @@
     </section>
 
     <!-- Projects Grid -->
-    <section class="pb-0">
+    <section class="pb-6 bg-light pt-2">
         <div class="container">
             {% if projects %}
                 <div class="row g-4 g-lg-5">
                     {% for project in projects %}
                     <div class="col-md-6 col-lg-4">
-                        <div class="card card-img-scale card-element-hover overflow-hidden h-100">
-                            <div class="card-img-scale-wrapper overflow-hidden">
-                                {% if project.featured_image %}
-                                    {% cloudinary_url project.featured_image width=400 height=300 crop="fill" format="auto" quality="auto" as image_url %}
-                                    <img src="{{ image_url }}" class="card-img" alt="{{ project.title }}" loading="lazy">
+                        <div class="card card-img-scale card-element-hover overflow-hidden">
+                            <!-- Card image -->
+                            <div class="card-img-scale-wrapper">
+                                <!-- Hover elements -->
+                                <div class="card-img-overlay hover-element d-flex align-items-center justify-content-center">
+                                    <!-- Client logo or name -->
+                                    {% if project.client.logo_white_thumbnail %}
+                                        <img src="{{ project.client.logo_white_thumbnail.url }}" class="h-40px z-index-2" alt="{{ project.client.name }} logo">
+                                    {% elif project.client.logo_white %}
+                                        <img src="{{ project.client.logo_white.url }}" class="h-40px z-index-2" alt="{{ project.client.name }} logo">
+                                    {% else %}
+                                        <h5 class="text-white text-center z-index-2 mb-0">{{ project.client.name }}</h5>
+                                    {% endif %}
+                                    <!-- BG overlay -->
+                                    <div class="bg-overlay bg-dark opacity-7"></div>
+                                </div>
+                                <!-- Project image -->
+                                {% if project.thumbnail %}
+                                    <img src="{{ project.thumbnail.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
+                                {% elif project.featured_image %}
+                                    <img src="{{ project.featured_image.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
                                 {% else %}
-                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
-                                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
-                                    </div>
+                                    <img src="{% static 'images/portfolio/placeholder.jpg' %}" class="img-scale card-img-top" alt="{{ project.title }}">
                                 {% endif %}
                             </div>
-                            <div class="card-body d-flex flex-column">
-                                <!-- Categories -->
-                                {% if project.categories.exists %}
-                                    <div class="mb-2">
-                                        {% for category in project.categories.all %}
-                                            <span class="badge bg-primary bg-opacity-10 text-primary me-1 mb-1">
-                                                {{ category.name }}
-                                            </span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                
-                                <!-- Title -->
-                                <h5 class="card-title">
-                                    <a href="{% url 'projects:detail' project.slug %}" class="stretched-link text-decoration-none">
-                                        {{ project.title }}
-                                    </a>
-                                </h5>
-                                
-                                <!-- Description -->
-                                <p class="card-text flex-grow-1">{{ project.description|truncatewords:20 }}</p>
-                                
-                                <!-- Client -->
-                                <div class="d-flex align-items-center mt-auto">
-                                    {% if project.client.logo %}
-                                        {% cloudinary_url project.client.logo width=30 height=30 crop="fill" as client_logo %}
-                                        <img src="{{ client_logo }}" class="avatar avatar-xs rounded-circle me-2" alt="{{ project.client.name }}">
-                                    {% endif %}
-                                    <small class="text-muted">{{ project.client.name }}</small>
-                                    {% if project.is_featured %}
-                                        <span class="badge bg-warning ms-auto">
-                                            <i class="bi bi-star-fill"></i>
-                                        </span>
-                                    {% endif %}
+
+                            <div class="card-body">
+                                <h6 class="card-title mb-2">{{ project.title }}</h6>
+                                <p class="card-text mb-3">{{ project.description|truncatewords:15 }}</p>
+                                <!-- Badge list -->
+                                <div class="hstack flex-wrap gap-2 mb-4">
+                                    {% for category in project.categories.all %}
+                                        <div class="badge border text-white" style="background-color: {{ category.color }};">{{ category.name }}</div>
+                                    {% endfor %}
                                 </div>
+                                <!-- Button -->
+                                <a href="{% url 'projects:detail' project.slug %}" class="text-primary-hover stretched-link heading-color mb-0">Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i></a>
                             </div>
                         </div>
                     </div>
@@ -174,4 +224,285 @@
         </div>
     </section>
 </main>
+
+<!-- AJAX script pour le filtrage dynamique -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélection des éléments DOM
+    const categoryFilters = document.querySelectorAll('#category-filters a');
+    const projectsContainer = document.querySelector('.projects-grid') || document.querySelector('.row.g-4.g-lg-5');
+    const projectsCountEl = document.getElementById('projects-count');
+    
+    // Ajout des événements de clic aux filtres de catégorie
+    categoryFilters.forEach(filter => {
+        filter.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Récupération des données de catégorie
+            const category = this.dataset.category;
+            const categoryName = this.dataset.name || 'Tous les projets';
+            
+            // Mise à jour de l'état actif
+            categoryFilters.forEach(f => f.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Affichage d'un indicateur de chargement
+            projectsContainer.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Chargement des projets...</p>
+                </div>
+            `;
+            
+            // Mise à jour de l'URL sans rechargement de page
+            const url = new URL(window.location);
+            if (category) {
+                url.searchParams.set('category', category);
+            } else {
+                url.searchParams.delete('category');
+            }
+            window.history.pushState({}, '', url);
+            
+            // Appel AJAX à l'API
+            fetch(`/projects/api/portfolio/${category ? '?category=' + category : ''}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Les projets sont dans data.projects selon la structure de l'API
+                    const projects = data.projects || [];
+                    const count = projects.length;
+                    
+                    // Configuration de la pagination côté client
+                    const projectsPerPage = 6;
+                    const totalPages = Math.ceil(count / projectsPerPage);
+                    let currentPage = 1;
+                    
+                    // Mise à jour du compteur de projets
+                    projectsCountEl.innerHTML = `
+                        <small class="text-muted">
+                            ${category 
+                                ? `${count} projet${count > 1 ? 's' : ''} dans la catégorie "${categoryName}"`
+                                : `${count} projet${count > 1 ? 's' : ''} au total`
+                            }
+                        </small>
+                    `;
+                    
+                    // Si aucun projet trouvé
+                    if (count === 0) {
+                        projectsContainer.innerHTML = `
+                            <div class="col-12 text-center">
+                                <div class="py-5">
+                                    <i class="bi bi-folder-x display-1 text-muted mb-3"></i>
+                                    <h4>Aucun projet trouvé</h4>
+                                    <p class="text-muted">
+                                        ${category 
+                                            ? `Aucun projet n'a été trouvé dans cette catégorie. <a href="/projects/" class="text-decoration-none">Voir tous les projets</a>`
+                                            : 'Aucun projet n\'est disponible pour le moment.'
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Fonction pour afficher une page spécifique
+                    function renderPage(pageNum) {
+                        currentPage = pageNum;
+                        const start = (pageNum - 1) * projectsPerPage;
+                        const end = Math.min(start + projectsPerPage, count);
+                        const currentProjects = projects.slice(start, end);
+                        
+                        // Création des cartes de projet
+                        let html = '';
+                        currentProjects.forEach(project => {
+                            // Préparation de l'image
+                            let projectImage = '';
+                            if (project.image_urls && project.image_urls.medium) {
+                                projectImage = `<img src="${project.image_urls.medium}" class="img-scale card-img-top" alt="${project.title}">`;
+                            } else if (project.image_urls && project.image_urls.original) {
+                                projectImage = `<img src="${project.image_urls.original}" class="img-scale card-img-top" alt="${project.title}">`;
+                            } else {
+                                projectImage = `<img src="/static/images/portfolio/placeholder.jpg" class="img-scale card-img-top" alt="${project.title}">`;
+                            }
+                        
+                            // Préparation du logo/nom client
+                            let clientDisplay = '';
+                            if (project.client) {
+                                const logoUrls = project.client.logo_urls || {};
+                                if (logoUrls.thumbnail) {
+                                    clientDisplay = `<img src="${logoUrls.thumbnail}" class="h-40px z-index-2" alt="${project.client.name} logo">`;
+                                } else if (logoUrls.original) {
+                                    clientDisplay = `<img src="${logoUrls.original}" class="h-40px z-index-2" alt="${project.client.name} logo">`;
+                                } else {
+                                    clientDisplay = `<h5 class="text-white text-center z-index-2 mb-0">${project.client.name}</h5>`;
+                                }
+                            }
+                        
+                            // Préparation des badges de catégorie
+                            let categoriesBadges = '';
+                            if (project.categories && project.categories.length > 0) {
+                                project.categories.forEach(cat => {
+                                    categoriesBadges += `<div class="badge border text-white" style="background-color: ${cat.color};">${cat.name}</div>`;
+                                });
+                            }
+                        
+                        // Création de la carte
+                        html += `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card card-img-scale card-element-hover overflow-hidden">
+                                    <!-- Card image -->
+                                    <div class="card-img-scale-wrapper">
+                                        <!-- Hover elements -->
+                                        <div class="card-img-overlay hover-element d-flex align-items-center justify-content-center">
+                                            ${clientDisplay}
+                                            <!-- BG overlay -->
+                                            <div class="bg-overlay bg-dark opacity-7"></div>
+                                        </div>
+                                        <!-- Project image -->
+                                        ${projectImage}
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-2">${project.title}</h6>
+                                            <p class="card-text mb-3">${project.description ? project.description.substring(0, 100) + (project.description.length > 100 ? '...' : '') : ''}</p>
+                                        <!-- Badge list -->
+                                        <div class="hstack flex-wrap gap-2 mb-4">
+                                            ${categoriesBadges}
+                                        </div>
+                                        <!-- Button -->
+                                            <a href="/projects/projet/${project.slug}/" class="text-primary-hover stretched-link heading-color mb-0">
+                                                Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i>
+                                            </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                            // Mise à jour des projets
+                            projectsContainer.innerHTML = html;
+                            
+                            // Nettoyer la pagination existante s'il y en a une
+                            const existingPagination = document.querySelector('.pagination');
+                            if (existingPagination) {
+                                existingPagination.closest('.row').remove();
+                            }
+                            
+                            // Ajout de la pagination
+                            if (totalPages > 1) {
+                                let paginationHtml = `
+                                    <div class="row mt-5">
+                                        <div class="col-12">
+                                            <nav aria-label="Navigation des projets">
+                                                <ul class="pagination justify-content-center">
+                                `;
+                                
+                                // Premier et précédent
+                                if (currentPage > 1) {
+                                    paginationHtml += `
+                                        <li class="page-item">
+                                            <a class="page-link" href="javascript:void(0)" data-page="1">
+                                                <i class="bi bi-chevron-double-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    `;
+                                }
+                                
+                                // Pages numérotées
+                                for (let i = 1; i <= totalPages; i++) {
+                                    if (i === currentPage) {
+                                        paginationHtml += `
+                                            <li class="page-item active">
+                                                <span class="page-link">${i}</span>
+                                            </li>
+                                        `;
+                                    } else if (i > currentPage - 3 && i < currentPage + 3) {
+                                        paginationHtml += `
+                                            <li class="page-item">
+                                                <a class="page-link" href="javascript:void(0)" data-page="${i}">${i}</a>
+                                            </li>
+                                        `;
+                                    }
+                                }
+                                
+                                // Suivant et dernier
+                                if (currentPage < totalPages) {
+                                    paginationHtml += `
+                                        <li class="page-item">
+                                            <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="javascript:void(0)" data-page="${totalPages}">
+                                                <i class="bi bi-chevron-double-right"></i>
+                                            </a>
+                                        </li>
+                                    `;
+                                }
+                                
+                                paginationHtml += `
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Ajouter la pagination après les projets
+                                projectsContainer.insertAdjacentHTML('afterend', paginationHtml);
+                                
+                                // Ajouter des événements de clic aux boutons de pagination
+                                document.querySelectorAll('.pagination a.page-link').forEach(link => {
+                                    link.addEventListener('click', function() {
+                                        const pageNum = parseInt(this.dataset.page);
+                                        renderPage(pageNum);
+                                        
+                                        // Faire défiler vers le haut pour voir les nouveaux projets
+                                        window.scrollTo({
+                                            top: projectsContainer.offsetTop - 100,
+                                            behavior: 'smooth'
+                                        });
+                                    });
+                                });
+                            }
+                        }
+                        
+                        // Afficher la première page
+                        renderPage(1);
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    projectsContainer.innerHTML = `
+                        <div class="col-12 text-center">
+                            <div class="py-5">
+                                <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+                                <h4>Une erreur est survenue</h4>
+                                <p class="text-muted">
+                                    Impossible de charger les projets. Veuillez réessayer plus tard.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Supprimer la pagination en cas d'erreur
+                    const existingPagination = document.querySelector('.pagination');
+                    if (existingPagination) {
+                        existingPagination.closest('.row').remove();
+                    }
+                });
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -1,44 +1,81 @@
 {% extends "base.html" %}
 {% load static %}
-{% load cloudinary_tags %}
 
 {% block title %}{{ project.title }} - Case Study{% endblock %}
 
 {% block meta_description %}{{ project.description }}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/project-detail.css' %}">
+{% endblock %}
+
 {% block content %}
 <main>
     <!-- Hero Section -->
-    <section class="pt-xl-9">
-        <div class="container pt-4 pt-xl-0">
+    <section class="hero-section pt-xl-4 bg-dark" data-bs-theme="dark">
+        <div class="container pt-4 pt-xl-5">
             <div class="row">
                 <!-- Title -->
-                <div class="col-md-9 mx-auto text-center">
-                    <!-- Breadcrumb -->
-                    <nav aria-label="breadcrumb" class="mb-4">
-                        <ol class="breadcrumb justify-content-center">
-                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Accueil</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Projets</a></li>
-                            <li class="breadcrumb-item active">{{ project.title }}</li>
-                        </ol>
-                    </nav>
+                <div class="col-md-10 col-lg-8 mx-auto text-center">
+                   
+                    
+                    <!-- Categories badges -->
+                    {% if project.categories.exists %}
+                    <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+                        {% for category in project.categories.all %}
+                            <span class="badge rounded-pill px-3 py-2 text-white category-badge" style="background-color: {{ category.color }};">
+                                {{ category.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     
                     <!-- Title -->
-                    <h1 class="mb-4">{{ project.title }}</h1>
+                    <h1 class="display-5 fw-bold text-white mb-3">{{ project.title }}</h1>
                     {% if project.subtitle %}
-                        <p class="lead">{{ project.subtitle }}</p>
+                        <p class="lead text-white-75 mb-3">{{ project.subtitle }}</p>
                     {% endif %}
-                    <p>{{ project.description }}</p>
+                    <p class="text-white-75 mb-4">{{ project.description }}</p>
+                    
+                    <!-- Client info -->
+                    <div class="d-flex align-items-center justify-content-center mb-4">
+                        {% if project.client.logo_white_urls.thumbnail %}
+                            <img src="{{ project.client.logo_white_urls.thumbnail }}" 
+                                 alt="{{ project.client.name }}" 
+                                 class="me-3" 
+                                 style="height: 40px; filter: brightness(0) invert(1);">
+                        {% endif %}
+                        <div class="text-start">
+                            <small class="text-white-50 d-block">Projet réalisé pour</small>
+                            <span class="text-white fw-bold">{{ project.client.name }}</span>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Decorative wave -->
+        <div class="position-relative">
+            <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden">
+                <svg class="fill-light" width="100%" height="50" viewBox="0 0 500 50" preserveAspectRatio="none">
+                    <path d="M0,50 Q250,0 500,50 L500,50 L0,50 Z"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
 
+    <!-- Project Content Section -->
+    <section class="bg-light py-6">
+        <div class="container">
+            <div class="row">
                 <!-- Featured Image -->
-                <div class="col-12 mt-6">
-                    {% if featured_image_urls %}
-                        <div class="card h-300px h-md-400px h-xl-600px overflow-hidden">
+                <div class="col-12 mb-6">
+                    {% if project.featured_image_urls %}
+                        <div class="card h-300px h-md-400px h-xl-600px overflow-hidden rounded-4 shadow-lg">
                             <picture>
-                                <source media="(min-width: 1200px)" srcset="{{ featured_image_urls.large }}">
-                                <source media="(min-width: 768px)" srcset="{{ featured_image_urls.medium }}">
-                                <img src="{{ featured_image_urls.small }}" 
+                                <source media="(min-width: 1200px)" srcset="{{ project.featured_image_urls.large }}">
+                                <source media="(min-width: 768px)" srcset="{{ project.featured_image_urls.large }}">
+                                <img src="{{ project.featured_image_urls.thumbnail }}" 
                                      alt="{{ project.title }}" 
                                      class="w-100 h-100 object-fit-cover"
                                      loading="lazy">
@@ -52,22 +89,26 @@
                     <div class="row">
                         <!-- Project metadata -->
                         <div class="col-11 col-lg-5 col-xl-4 mx-auto mt-n8 mt-md-n9">
-                            <div class="card bg-dark text-white p-4" data-bs-theme="dark">
-                                <h5 class="text-white mb-3">Informations du projet</h5>
+                            <div class="card bg-dark text-white p-4 rounded-4 shadow-lg" data-bs-theme="dark">
+                                <h5 class="text-white mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>Informations du projet
+                                </h5>
                                 
                                 <!-- Client -->
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Client:</span>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span><i class="bi bi-building me-2"></i>Client:</span>
                                     <span class="fw-bold">{{ project.client.name }}</span>
                                 </div>
                                 
                                 <!-- Categories -->
                                 {% if project.categories.exists %}
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Services:</span>
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <span><i class="bi bi-tags me-2"></i>Services:</span>
                                     <div class="text-end">
                                         {% for category in project.categories.all %}
-                                            <span class="badge bg-primary mb-1">{{ category.name }}</span>
+                                            <span class="category-badge" style="background-color: {{ category.color }}">
+                                                {{ category.name }}
+                                            </span>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -75,22 +116,45 @@
                                 
                                 <!-- Duration -->
                                 {% if project.start_date and project.end_date %}
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Durée:</span>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span><i class="bi bi-calendar-range me-2"></i>Durée:</span>
                                     <span class="fw-bold">{{ project.duration_in_days }} jours</span>
                                 </div>
                                 {% endif %}
                                 
+                                <!-- Dates -->
+                                {% if project.start_date %}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span><i class="bi bi-calendar-check me-2"></i>Début:</span>
+                                    <span class="fw-bold">{{ project.start_date|date:"d/m/Y" }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if project.end_date %}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span><i class="bi bi-calendar-x me-2"></i>Fin:</span>
+                                    <span class="fw-bold">{{ project.end_date|date:"d/m/Y" }}</span>
+                                </div>
+                                {% endif %}
+                                
                                 <!-- Status -->
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Statut:</span>
-                                    <span class="badge bg-success">{{ project.get_status_display }}</span>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span><i class="bi bi-flag me-2"></i>Statut:</span>
+                                    <span class="badge 
+                                        {% if project.status == 'completed' %}bg-success
+                                        {% elif project.status == 'in_progress' %}bg-warning
+                                        {% elif project.status == 'on_hold' %}bg-secondary
+                                        {% elif project.status == 'cancelled' %}bg-danger
+                                        {% else %}bg-info
+                                        {% endif %}">
+                                        {{ project.get_status_display }}
+                                    </span>
                                 </div>
                                 
                                 {% if project.client.website %}
-                                <div class="mt-3">
-                                    <a href="{{ project.client.website }}" class="btn btn-primary btn-sm" target="_blank">
-                                        <i class="bi bi-globe me-1"></i>Visiter le site
+                                <div class="mt-4 pt-3 border-top border-secondary">
+                                    <a href="{{ project.client.website }}" class="btn btn-primary btn-sm w-100" target="_blank">
+                                        <i class="bi bi-globe me-2"></i>Visiter le site
                                     </a>
                                 </div>
                                 {% endif %}
@@ -100,83 +164,209 @@
                         <!-- Project content -->
                         <div class="col-lg-7 ms-auto ps-5 mt-6 mt-lg-0">
                             {% if project.content %}
-                                {{ project.content|linebreaks }}
+                                <div class="project-content">
+                                    {{ project.content|safe }}
+                                </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
-                <!-- Additional Images -->
-                {% if additional_images %}
-                <div class="col-12 mt-6">
-                    <h3 class="mb-4">Galerie du projet</h3>
-                    <div class="row g-4 g-xl-6">
-                        {% for img_data in additional_images %}
-                            <div class="col-sm-4">
-                                <div class="card h-200px overflow-hidden">
-                                    <picture>
-                                        <source media="(min-width: 768px)" srcset="{{ img_data.urls.medium }}">
-                                        <img src="{{ img_data.urls.small }}" 
-                                             alt="{{ img_data.image.title|default:'Image du projet' }}" 
-                                             class="w-100 h-100 object-fit-cover"
-                                             loading="lazy">
-                                    </picture>
+                <!-- Additional Images Gallery Carousel -->
+                {% if project.images.exists %}
+                <div class="col-12 mt-8">
+                    <div class="text-center mb-5">
+                        <h3 class="mb-2">Galerie du projet</h3>
+                        <p class="text-muted">Découvrez les différentes étapes et résultats de ce projet</p>
+                    </div>
+                    
+                    <!-- Bootstrap Carousel -->
+                    <div id="projectGalleryCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
+                            {% for project_image in project.images.all %}
+                                <button type="button" 
+                                        data-bs-target="#projectGalleryCarousel" 
+                                        data-bs-slide-to="{{ forloop.counter0 }}" 
+                                        {% if forloop.first %}class="active" aria-current="true"{% endif %}
+                                        aria-label="Image {{ forloop.counter }}"></button>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Slides -->
+                        <div class="carousel-inner rounded-4 shadow-lg">
+                            {% for project_image in project.images.all %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <div class="d-flex justify-content-center align-items-center bg-light" style="min-height: 400px;">
+                                        {% if project_image.image_urls %}
+                                            <img src="{{ project_image.image_urls.large }}" 
+                                                 alt="{{ project_image.title|default:'Image du projet' }}" 
+                                                 class="d-block img-fluid rounded-4"
+                                                 style="max-height: 600px; max-width: 100%; object-fit: contain; cursor: pointer;"
+                                                 loading="lazy"
+                                                 data-bs-toggle="modal"
+                                                 data-bs-target="#imageModal{{ forloop.counter }}">
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Caption -->
+                                    {% if project_image.title or project_image.description %}
+                                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded-3 p-3">
+                                            {% if project_image.title %}
+                                                <h5 class="text-white mb-1">{{ project_image.title }}</h5>
+                                            {% endif %}
+                                            {% if project_image.description %}
+                                                <p class="text-white-75 mb-0">{{ project_image.description|striptags|truncatewords:15 }}</p>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
                                 </div>
-                                {% if img_data.image.title %}
-                                    <h6 class="mt-2">{{ img_data.image.title }}</h6>
-                                {% endif %}
-                                {% if img_data.image.description %}
-                                    <p class="small text-muted">{{ img_data.image.description }}</p>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
+                                
+                                <!-- Modal pour l'image -->
+                                <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1">
+                                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ project_image.title|default:'Image du projet' }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-0 text-center">
+                                                {% if project_image.image_urls %}
+                                                    <img src="{{ project_image.image_urls.large }}" 
+                                                         alt="{{ project_image.title|default:'Image du projet' }}" 
+                                                         class="img-fluid">
+                                                {% endif %}
+                                            </div>
+                                            {% if project_image.description %}
+                                            <div class="modal-footer">
+                                                <div class="project-image-description w-100">
+                                                    {{ project_image.description|safe }}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#projectGalleryCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Précédent</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#projectGalleryCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Suivant</span>
+                        </button>
                     </div>
                 </div>
                 {% endif %}
 
                 <!-- Metrics -->
                 {% if project.metrics %}
-                <div class="col-12 mt-6">
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <h3>Résultats obtenus</h3>
-                            <div class="row g-3">
-                                {% if project.metrics.page_views_increase %}
-                                <div class="col-6">
-                                    <div class="text-center">
-                                        <h4 class="text-primary">+{{ project.metrics.page_views_increase }}%</h4>
-                                        <p class="mb-0">Augmentation du trafic</p>
+                <div class="col-12 mt-8">
+                    <div class="card rounded-4 shadow-lg p-4 p-lg-5">
+                        <div class="text-center mb-5">
+                            <h3 class="mb-2">Résultats obtenus</h3>
+                            <p class="text-muted">Les performances mesurées suite à la réalisation du projet</p>
+                        </div>
+                        <div class="row g-4">
+                            {% if project.metrics.page_views_increase %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-primary bg-opacity-10 metric-card">
+                                    <div class="icon-lg rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-graph-up-arrow"></i>
                                     </div>
+                                    <h4 class="text-primary mb-1">+{{ project.metrics.page_views_increase }}%</h4>
+                                    <p class="mb-0 small fw-semibold">Augmentation du trafic</p>
                                 </div>
-                                {% endif %}
-                                
-                                {% if project.metrics.conversion_rate_increase %}
-                                <div class="col-6">
-                                    <div class="text-center">
-                                        <h4 class="text-success">+{{ project.metrics.conversion_rate_increase }}%</h4>
-                                        <p class="mb-0">Taux de conversion</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                
-                                {% if project.metrics.seo_score %}
-                                <div class="col-6">
-                                    <div class="text-center">
-                                        <h4 class="text-info">{{ project.metrics.seo_score }}/100</h4>
-                                        <p class="mb-0">Score SEO</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                
-                                {% if project.metrics.performance_score %}
-                                <div class="col-6">
-                                    <div class="text-center">
-                                        <h4 class="text-warning">{{ project.metrics.performance_score }}/100</h4>
-                                        <p class="mb-0">Performance</p>
-                                    </div>
-                                </div>
-                                {% endif %}
                             </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.conversion_rate_increase %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-success bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-success text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-target"></i>
+                                    </div>
+                                    <h4 class="text-success mb-1">+{{ project.metrics.conversion_rate_increase }}%</h4>
+                                    <p class="mb-0 small fw-semibold">Taux de conversion</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.seo_score %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-info bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-info text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-search"></i>
+                                    </div>
+                                    <h4 class="text-info mb-1">{{ project.metrics.seo_score }}/100</h4>
+                                    <p class="mb-0 small fw-semibold">Score SEO</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.performance_score %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-warning bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-warning text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-speedometer2"></i>
+                                    </div>
+                                    <h4 class="text-warning mb-1">{{ project.metrics.performance_score }}/100</h4>
+                                    <p class="mb-0 small fw-semibold">Performance</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.bounce_rate_decrease %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-danger bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-danger text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-graph-down-arrow"></i>
+                                    </div>
+                                    <h4 class="text-danger mb-1">-{{ project.metrics.bounce_rate_decrease }}%</h4>
+                                    <p class="mb-0 small fw-semibold">Taux de rebond</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.leads_increase %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-secondary bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-secondary text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <h4 class="text-secondary mb-1">+{{ project.metrics.leads_increase }}%</h4>
+                                    <p class="mb-0 small fw-semibold">Leads générés</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.accessibility_score %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-dark bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-dark text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-universal-access"></i>
+                                    </div>
+                                    <h4 class="text-dark mb-1">{{ project.metrics.accessibility_score }}/100</h4>
+                                    <p class="mb-0 small fw-semibold">Accessibilité</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if project.metrics.loading_time_improvement %}
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-3 rounded-3 bg-success bg-opacity-10">
+                                    <div class="icon-lg rounded-circle bg-success text-white mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-lightning"></i>
+                                    </div>
+                                    <h4 class="text-success mb-1">+{{ project.metrics.loading_time_improvement }}%</h4>
+                                    <p class="mb-0 small fw-semibold">Vitesse de chargement</p>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -184,21 +374,41 @@
 
                 <!-- Testimonial -->
                 {% if project.testimonial %}
-                <div class="col-12 mt-6">
-                    <div class="card card-body bg-light p-sm-5">
-                        <h5 class="display-4 opacity-3 text-primary lh-0 mb-0">
-                            <i class="bi bi-quote"></i>
-                        </h5>
-                        <q class="fs-5 heading-color">{{ project.testimonial.quote }}</q>
-                        <div class="d-flex align-items-center mt-4">
-                            {% if project.testimonial.client_photo %}
-                                {% cloudinary_image project.testimonial.client_photo alt=project.testimonial.client_name css_class="avatar avatar-md rounded-circle me-3" width=50 height=50 crop="fill" %}
-                            {% endif %}
-                            <div>
-                                <h6 class="mb-0">{{ project.testimonial.client_name }}</h6>
-                                {% if project.testimonial.client_position %}
-                                    <small class="text-muted">{{ project.testimonial.client_position }}</small>
+                <div class="col-12 mt-8">
+                    <div class="card testimonial-improved rounded-4 shadow-lg p-5">
+                        <div class="testimonial-content text-center text-white">
+                            <div class="icon-xl rounded-circle bg-white bg-opacity-20 mx-auto mb-4 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-quote text-white" style="font-size: 2rem;"></i>
+                            </div>
+                            <blockquote class="testimonial-quote mb-4 lh-base">
+                                "{{ project.testimonial.quote }}"
+                            </blockquote>
+                            <div class="d-flex align-items-center justify-content-center">
+                                {% if project.testimonial.client_photo_urls %}
+                                    <img src="{{ project.testimonial.client_photo_urls.thumbnail }}" 
+                                         alt="{{ project.testimonial.client_name }}" 
+                                         class="avatar avatar-lg rounded-circle me-3 border border-white border-3"
+                                         loading="lazy">
+                                {% else %}
+                                    <div class="avatar avatar-lg rounded-circle me-3 bg-white bg-opacity-20 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-person text-white"></i>
+                                    </div>
                                 {% endif %}
+                                <div class="text-start">
+                                    <h6 class="testimonial-author mb-0 fw-bold">{{ project.testimonial.client_name }}</h6>
+                                    {% if project.testimonial.client_position %}
+                                        <small class="testimonial-role">{{ project.testimonial.client_position }}</small>
+                                    {% endif %}
+                                    <div class="mt-1 testimonial-stars">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= project.testimonial.rating %}
+                                                <i class="bi bi-star-fill"></i>
+                                            {% else %}
+                                                <i class="bi bi-star text-white-50"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -210,37 +420,65 @@
 
     <!-- Related Projects -->
     {% if related_projects %}
-    <section class="pt-0">
+    <section class="pt-8 pb-5">
         <div class="container">
-            <div class="text-center mb-4 mb-sm-6">
-                <h3 class="mb-0">Projets similaires</h3>
+            <div class="text-center mb-6">
+                <h3 class="mb-2">Projets similaires</h3>
+                <p class="text-muted">Découvrez d'autres réalisations dans le même domaine</p>
             </div>
 
             <div class="row g-4">
                 {% for related_project in related_projects %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="card card-img-scale card-element-hover overflow-hidden">
+                    <div class="card card-img-scale card-element-hover overflow-hidden rounded-4 shadow-lg h-100">
                         <div class="card-img-scale-wrapper overflow-hidden">
-                            {% if related_project.featured_image %}
-                                {% cloudinary_url related_project.featured_image width=400 height=300 crop="fill" as image_url %}
-                                <img src="{{ image_url }}" class="card-img" alt="{{ related_project.title }}">
+                            {% if related_project.featured_image_urls %}
+                                <img src="{{ related_project.featured_image_urls.large }}" 
+                                     class="card-img" 
+                                     alt="{{ related_project.title }}"
+                                     loading="lazy">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
                             {% endif %}
                         </div>
                         <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <small class="text-muted fw-semibold">{{ related_project.client.name }}</small>
+                                {% if related_project.categories.exists %}
+                                    <div>
+                                        {% for category in related_project.categories.all|slice:":2" %}
+                                            <span class="category-badge" style="background-color: {{ category.color }}">
+                                                {{ category.name }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                             <h6 class="card-title">
-                                <a href="{% url 'projects:detail' related_project.slug %}" class="stretched-link">
+                                <a href="{% url 'projects:detail' related_project.slug %}" class="stretched-link text-decoration-none">
                                     {{ related_project.title }}
                                 </a>
                             </h6>
-                            <p class="mb-2">{{ related_project.description|truncatewords:15 }}</p>
-                            <small class="text-muted">{{ related_project.client.name }}</small>
+                            <p class="mb-0 text-muted small">{{ related_project.description|truncatewords:15 }}</p>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            
+            <div class="text-center mt-5">
+                <a href="{% url 'projects:list' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-grid me-2"></i>Voir tous les projets
+                </a>
+            </div>
         </div>
     </section>
     {% endif %}
 </main>
+
+{% block extra_js %}
+<!-- Bootstrap carousel is handled natively, no custom JS needed -->
+{% endblock %}
 {% endblock %}
