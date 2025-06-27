@@ -67,8 +67,17 @@ Case studies START -->
 								<div class="badge border text-white" style="background-color: {{ category.color }};">{{ category.name }}</div>
 							{% endfor %}
 						</div>
-						<!-- Button -->
-						<a href="{% url 'projects:detail' project.slug %}" class="text-primary-hover stretched-link heading-color mb-0">Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i></a>
+						<!-- Actions -->
+						<div class="d-flex justify-content-between align-items-center">
+							<!-- Voir l'étude de cas -->
+							<a href="{% url 'projects:detail' project.slug %}" class="text-primary-hover heading-color mb-0">Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i></a>
+							<!-- Site web du client -->
+							{% if project.client.website %}
+								<a href="{{ project.client.website }}" class="btn btn-sm btn-light rounded-circle" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Visiter le site web">
+									<i class="fa-solid fa-globe"></i>
+								</a>
+							{% endif %}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -89,3 +98,12 @@ Case studies START -->
 </section>
 <!-- =======================
 Case studies END -->
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// Initialisation des tooltips
+		[].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function(tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl);
+		});
+	});
+</script>

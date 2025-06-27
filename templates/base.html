@@ -10,12 +10,12 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="author" content="webtech-solutions.fr">
-	<meta name="description" content="{% block meta_description %}WebTech Solutions : Expertise en développement web et analyse de données pour propulser votre business. Solutions techniques innovantes et stratégies data-driven sur mesure.{% endblock %}">
-	
+    <meta name="description" content="WebTech Solutions : Expertise en développement web et analyse de données pour propulser votre business. Solutions techniques innovantes et stratégies data-driven sur mesure.">	
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="{{ request.build_absolute_uri }}">
 	<meta property="og:title" content="{% block og_title %}{{ block.super }}{% endblock %}">
+	{% comment %} <meta property="og:description" content="{% block og_description %}{{ block.super }}{% endblock %}"> {% endcomment %}
 	<meta property="og:description" content="{% block og_description %}{{ block.super }}{% endblock %}">
 	<meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/meta/webtech-solutions-share-image.png' %}{% endblock %}">
 
@@ -23,7 +23,8 @@
 	<meta property="twitter:card" content="summary_large_image">
 	<meta property="twitter:url" content="{{ request.build_absolute_uri }}">
 	<meta property="twitter:title" content="{% block twitter_title %}{{ block.super }}{% endblock %}">
-	<meta property="twitter:description" content="{% block twitter_description %}{{ block.super }}{% endblock %}">
+	{% comment %} <meta property="twitter:description" content="{% block twitter_description %}{{ block.super }}{% endblock %}"> {% endcomment %}
+	<meta property="twitter:description" content="WebTech Solutions : Expertise en développement web et analyse de données pour propulser votre business. Solutions techniques innovantes et stratégies data-driven sur mesure.">
 	<meta property="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/meta/webtech-solutions-share-image.png' %}{% endblock %}">
 
 	<!-- Dark mode -->

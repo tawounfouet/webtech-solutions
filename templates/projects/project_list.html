@@ -23,19 +23,21 @@
 <main>
     <!-- Header -->
     <section class="pt-xl-6 bg-dark" data-bs-theme="dark">
-        <div class="container pt-4 pt-xl-0">
+        <div class="container pt-4 pt-xl-6">
             <div class="row">
                 <div class="col-md-10 col-lg-8 mx-auto text-center">
-                    <!-- Breadcrumb -->
-                    <nav aria-label="breadcrumb" class="mb-4">
+                   
+                    
+                    <h1 class="display-4 text-white mb-4">Notre Portfolio</h1>
+                    <p class="lead text-white-75 mb-0">Découvrez une sélection de nos projets clients les plus récents, mettant en valeur notre expertise, notre créativité et notre engagement à livrer des résultats exceptionnels.</p>
+
+                     <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="mb-4 mt-4">
                         <ol class="breadcrumb justify-content-center">
                             <li class="breadcrumb-item"><a href="{% url 'index' %}" class="text-white-50">Accueil</a></li>
                             <li class="breadcrumb-item active text-white">Portfolio</li>
                         </ol>
                     </nav>
-                    
-                    <h1 class="display-4 text-white mb-4">Notre Portfolio</h1>
-                    <p class="lead text-white-75 mb-0">Découvrez une sélection de nos projets clients les plus récents, mettant en valeur notre expertise, notre créativité et notre engagement à livrer des résultats exceptionnels.</p>
                 </div>
             </div>
         </div>
@@ -160,8 +162,17 @@
                                         <div class="badge border text-white" style="background-color: {{ category.color }};">{{ category.name }}</div>
                                     {% endfor %}
                                 </div>
-                                <!-- Button -->
-                                <a href="{% url 'projects:detail' project.slug %}" class="text-primary-hover stretched-link heading-color mb-0">Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i></a>
+                                <!-- Actions -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <!-- Voir l'étude de cas -->
+                                    <a href="{% url 'projects:detail' project.slug %}" class="text-primary-hover heading-color mb-0">Voir l'étude de cas<i class="fa-solid fa-arrow-right-long fa-fw ms-2"></i></a>
+                                    <!-- Site web du client -->
+                                    {% if project.client.website %}
+                                        <a href="{{ project.client.website }}" class="btn btn-sm btn-light rounded-circle" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Visiter le site web">
+                                            <i class="fa-solid fa-globe"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -242,6 +253,11 @@
 <!-- AJAX script pour le filtrage dynamique -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation des tooltips
+    [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
     // Sélection des éléments DOM
     const categoryFilters = document.querySelectorAll('#category-filters a');
     const projectsContainer = document.querySelector('.projects-grid') || document.querySelector('.row.g-4.g-lg-5');
