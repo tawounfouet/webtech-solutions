@@ -27,8 +27,10 @@ class ProjectListView(ListView):
             queryset = queryset.filter(categories__slug=category_slug)
 
         # Tri
-        order_by = self.request.GET.get("order_by", "-created_at")
-        if order_by in ["-created_at", "-order", "title"]:
+        order_by = self.request.GET.get(
+            "order_by", "order"
+        )  # Changer le tri par défaut à "order"
+        if order_by in ["-created_at", "order", "-order", "title"]:
             queryset = queryset.order_by(order_by)
 
         return queryset
@@ -327,7 +329,7 @@ def project_stats_api(request):
     recent_projects = (
         Project.objects.filter(is_published=True)
         .select_related("client")
-        .order_by("-created_at")[:5]
+        .order_by("order")[:5]
     )
     stats["recent_projects"] = [
         {
@@ -355,6 +357,7 @@ def project_portfolio_api(request):
     client_slug = request.GET.get("client")
     featured_only = request.GET.get("featured") == "true"
     limit = int(request.GET.get("limit", 20))
+    order_by = request.GET.get("order_by", "order")  # Ordre par défaut
 
     # Construction de la requête
     projects = Project.objects.filter(is_published=True)
@@ -368,7 +371,17 @@ def project_portfolio_api(request):
     if featured_only:
         projects = projects.filter(is_featured=True)
 
-    projects = projects.select_related("client").prefetch_related("categories")[:limit]
+    # Validation du paramètre order_by
+    valid_order_fields = ["order", "-order", "-created_at", "title"]
+    if order_by not in valid_order_fields:
+        order_by = "order"  # Valeur par défaut sécurisée
+
+    # Appliquer le tri et les relations
+    projects = (
+        projects.select_related("client")
+        .prefetch_related("categories")
+        .order_by(order_by)[:limit]
+    )
 
     # Formatage des données
     portfolio_data = []

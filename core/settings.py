@@ -30,7 +30,12 @@ SECRET_KEY = "django-insecure-ntppzo0p#v4&j@2!6=c3c=$+5-3(%qqlm84tw0!+2h743(i2v@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["webtech-solutions.fr", "www.webtech-solutions.fr", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "webtech-solutions.fr",
+    "www.webtech-solutions.fr",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
@@ -68,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "authentication.middleware.SessionCleanupMiddleware",
+    "core.middleware.SiteURLMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"

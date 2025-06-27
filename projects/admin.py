@@ -314,14 +314,18 @@ class ClientAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = [
         "title",
+        "order",
         "featured_image_preview",
         "client",
         "status_colored",
         "categories_display",
         "is_featured",
         "is_published",
-        "created_at",
+        
+    
     ]
+    list_editable = ["order", "is_featured", "is_published"]
+    actions = ["mark_projects_as_published", "mark_projects_as_draft"]
     list_filter = [
         "status",
         "is_featured",

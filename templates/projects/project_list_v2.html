@@ -3,8 +3,9 @@
 
 <style>
 .card-img-scale-wrapper {
-    height: 250px;
+    height: 400px;
     overflow: hidden;
+    position: relative;
 }
 
 .card-img-scale-wrapper .img-scale {
@@ -12,6 +13,27 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+    transition: transform 0.5s ease;
+}
+
+/* Ajout d'un effet de zoom léger au survol */
+.card-img-scale:hover {
+    transform: scale(1.05);
+}
+
+/* Style pour maintenir le ratio d'aspect approprié pour les grandes images */
+.card-img-scale-wrapper::before {
+    content: '';
+    display: block;
+    padding-top: 51.6%; /* Ratio calculé pour 3020×1558 (1558/3020 = 0.516) */
+}
+
+.card-img-scale-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 </style>
 
@@ -85,22 +107,8 @@
                         </div>
                     </div>
                     
-                    <!-- Sorting options -->
-                    <div class="d-flex justify-content-center mt-3">
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-sort"></i> Trier par
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                                <li><a class="dropdown-item {% if not request.GET.order_by or request.GET.order_by == 'order' %}active{% endif %}" href="{% url 'projects:list' %}{% if current_category %}?category={{ current_category }}{% endif %}">Position</a></li>
-                                <li><a class="dropdown-item {% if request.GET.order_by == '-created_at' %}active{% endif %}" href="{% url 'projects:list' %}?{% if current_category %}category={{ current_category }}&{% endif %}order_by=-created_at">Plus récent</a></li>
-                                <li><a class="dropdown-item {% if request.GET.order_by == 'title' %}active{% endif %}" href="{% url 'projects:list' %}?{% if current_category %}category={{ current_category }}&{% endif %}order_by=title">Alphabétique</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
                     <!-- Projects count -->
-                    <div id="projects-count" class="text-center mt-2">
+                    <div id="projects-count" class="text-center mt-3">
                         <small class="text-muted">
                             {% if current_category %}
                                 {% with projects|length as count %}
@@ -272,41 +280,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Mise à jour de l'URL sans rechargement de page
             const url = new URL(window.location);
-            
-            // Conserver le paramètre order_by s'il existe
-            const orderBy = url.searchParams.get('order_by');
-            
             if (category) {
                 url.searchParams.set('category', category);
             } else {
                 url.searchParams.delete('category');
             }
-            
-            // Réajouter le paramètre order_by s'il existait
-            if (orderBy) {
-                url.searchParams.set('order_by', orderBy);
-            }
-            
             window.history.pushState({}, '', url);
             
             // Appel AJAX à l'API
-            const orderBy = new URL(window.location).searchParams.get('order_by');
-            let apiUrl = '/projects/api/portfolio/';
-            let params = [];
-            
-            if (category) {
-                params.push(`category=${encodeURIComponent(category)}`);
-            }
-            
-            if (orderBy) {
-                params.push(`order_by=${encodeURIComponent(orderBy)}`);
-            }
-            
-            if (params.length > 0) {
-                apiUrl += '?' + params.join('&');
-            }
-            
-            fetch(apiUrl)
+            fetch(`/projects/api/portfolio/${category ? '?category=' + category : ''}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Erreur réseau');

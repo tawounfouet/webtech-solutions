@@ -49,8 +49,8 @@ Case studies START -->
 							<div class="bg-overlay bg-dark opacity-7"></div>
 						</div>
 						<!-- Case studie image -->
-						{% if project.thumbnail %}
-							<img src="{{ project.thumbnail.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
+						{% if project.original %}
+							<img src="{{ project.original.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
 						{% elif project.featured_image %}
 							<img src="{{ project.featured_image.url }}" class="img-scale card-img-top" alt="{{ project.title }}">
 						{% else %}
