@@ -21,7 +21,7 @@ class ProjectCategory(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    description = CKEditor5Field('Description', config_name='default', blank=True)
+    description = CKEditor5Field("Description", config_name="default", blank=True)
     color = models.CharField(
         max_length=7, default="#6c757d", help_text="Code couleur hexadécimal"
     )
@@ -47,11 +47,13 @@ class Client(models.Model):
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
-    
+
     # Cloudinary public_id pour référence et suppression
     logo_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
-    logo_white_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
-    
+    logo_white_cloudinary_public_id = models.CharField(
+        max_length=255, blank=True, default=""
+    )
+
     # Version originale du logo
     logo = CloudinaryField(
         "client_logo",
@@ -60,7 +62,7 @@ class Client(models.Model):
         null=True,
         blank=True,
     )
-    
+
     # Version pour affichage principal
     logo_large = CloudinaryField(
         "client_logo_large",
@@ -74,7 +76,7 @@ class Client(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     # Version miniature du logo
     logo_thumbnail = CloudinaryField(
         "client_logo_thumbnail",
@@ -88,7 +90,7 @@ class Client(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     # Version originale du logo blanc
     logo_white = CloudinaryField(
         "client_logo_white",
@@ -97,7 +99,7 @@ class Client(models.Model):
         null=True,
         blank=True,
     )
-    
+
     # Version pour affichage principal du logo blanc
     logo_white_large = CloudinaryField(
         "client_logo_white_large",
@@ -111,7 +113,7 @@ class Client(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     # Version miniature du logo blanc
     logo_white_thumbnail = CloudinaryField(
         "client_logo_white_thumbnail",
@@ -125,17 +127,20 @@ class Client(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     website = models.URLField(blank=True)
-    description = CKEditor5Field('Description', config_name='default', blank=True)
+    description = CKEditor5Field("Description", config_name="default", blank=True)
     is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(
+        default=0, help_text="Ordre d'affichage du client dans la section logos"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Client"
         verbose_name_plural = "Clients"
-        ordering = ["name"]
+        ordering = ["order", "name"]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -153,7 +158,7 @@ class Client(models.Model):
                 logger.error(
                     f"Erreur lors de la suppression du logo Cloudinary: {str(e)}"
                 )
-        
+
         if self.logo_white_cloudinary_public_id:
             try:
                 cloudinary.uploader.destroy(
@@ -234,7 +239,12 @@ class Project(models.Model):
         max_length=300, blank=True, help_text="Sous-titre du projet"
     )
     description = models.TextField(help_text="Description courte pour les cartes")
-    content = CKEditor5Field('Content', config_name='extends', blank=True, help_text="Contenu détaillé du case study")
+    content = CKEditor5Field(
+        "Content",
+        config_name="extends",
+        blank=True,
+        help_text="Contenu détaillé du case study",
+    )
 
     # Relations
     client = models.ForeignKey(
@@ -247,8 +257,10 @@ class Project(models.Model):
 
     # Images
     # Cloudinary public_id pour référence et suppression
-    featured_image_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
-    
+    featured_image_cloudinary_public_id = models.CharField(
+        max_length=255, blank=True, default=""
+    )
+
     # Version originale de l'image principale
     featured_image = CloudinaryField(
         "project_featured_image",
@@ -257,7 +269,7 @@ class Project(models.Model):
         null=True,
         blank=True,
     )
-    
+
     # Version pour affichage principal (page de détail)
     featured_image_large = CloudinaryField(
         "project_featured_image_large",
@@ -271,7 +283,7 @@ class Project(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     # Version pour les listes/grilles de projets
     thumbnail = CloudinaryField(
         "project_featured_image_thumbnail",
@@ -387,7 +399,7 @@ class Project(models.Model):
         """
         if not self.featured_image:
             return False
-        
+
         try:
             # Générer la version large
             large_result = cloudinary.uploader.upload(
@@ -399,35 +411,41 @@ class Project(models.Model):
                     {"quality": "auto"},
                     {"fetch_format": "auto"},
                 ],
-                overwrite=True
+                overwrite=True,
             )
-            
+
             # Générer la version thumbnail
             thumb_result = cloudinary.uploader.upload(
                 self.featured_image.url,
                 folder="projects/featured/thumbnails",
-                public_id=f"{self.slug}_thumb", 
+                public_id=f"{self.slug}_thumb",
                 transformation=[
                     {"width": 400, "height": 300, "crop": "fill"},
                     {"quality": "auto"},
                     {"fetch_format": "auto"},
                 ],
-                overwrite=True
+                overwrite=True,
             )
-            
+
             # Mettre à jour les champs
-            self.featured_image_large = large_result['secure_url']
-            self.thumbnail = thumb_result['secure_url']
-            
+            self.featured_image_large = large_result["secure_url"]
+            self.thumbnail = thumb_result["secure_url"]
+
             # Sauvegarder le public_id original si pas déjà fait
             if not self.featured_image_cloudinary_public_id:
                 self.featured_image_cloudinary_public_id = self.featured_image.public_id
-            
-            self.save(update_fields=['featured_image_large', 'thumbnail', 'featured_image_cloudinary_public_id'])
-            
+
+            self.save(
+                update_fields=[
+                    "featured_image_large",
+                    "thumbnail",
+                    "featured_image_cloudinary_public_id",
+                ]
+            )
+
             logger.info(f"Versions d'images générées pour: {self.title}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Erreur lors de la génération des versions: {str(e)}")
             return False
@@ -439,10 +457,12 @@ class ProjectImage(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="images"
     )
-    
+
     # Cloudinary public_id pour référence et suppression
-    image_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
-    
+    image_cloudinary_public_id = models.CharField(
+        max_length=255, blank=True, default=""
+    )
+
     # Version originale de l'image
     image = CloudinaryField(
         "project_gallery_image",
@@ -451,7 +471,7 @@ class ProjectImage(models.Model):
         null=True,
         blank=True,
     )
-    
+
     # Version pour affichage principal
     image_large = CloudinaryField(
         "project_gallery_image_large",
@@ -465,7 +485,7 @@ class ProjectImage(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     # Version miniature
     image_thumbnail = CloudinaryField(
         "project_gallery_image_thumbnail",
@@ -479,9 +499,9 @@ class ProjectImage(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     title = models.CharField(max_length=200, blank=True)
-    description = CKEditor5Field('Description', config_name='default', blank=True)
+    description = CKEditor5Field("Description", config_name="default", blank=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -569,10 +589,12 @@ class ProjectTestimonial(models.Model):
     )
     client_name = models.CharField(max_length=200)
     client_position = models.CharField(max_length=200, blank=True)
-    
+
     # Cloudinary public_id pour référence et suppression
-    client_photo_cloudinary_public_id = models.CharField(max_length=255, blank=True, default="")
-    
+    client_photo_cloudinary_public_id = models.CharField(
+        max_length=255, blank=True, default=""
+    )
+
     # Version originale de la photo client
     client_photo = CloudinaryField(
         "testimonial_client_photo",
@@ -581,7 +603,7 @@ class ProjectTestimonial(models.Model):
         null=True,
         blank=True,
     )
-    
+
     # Version pour affichage principal
     client_photo_large = CloudinaryField(
         "testimonial_client_photo_large",
@@ -595,7 +617,7 @@ class ProjectTestimonial(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     # Version miniature
     client_photo_thumbnail = CloudinaryField(
         "testimonial_client_photo_thumbnail",
@@ -609,7 +631,7 @@ class ProjectTestimonial(models.Model):
             {"fetch_format": "auto"},
         ],
     )
-    
+
     quote = models.TextField()
     rating = models.PositiveIntegerField(
         choices=[(i, i) for i in range(1, 6)], default=5

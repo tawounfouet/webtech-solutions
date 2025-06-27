@@ -41,7 +41,7 @@ Main Banner START -->
 			<div class="col-12 col-xl-7 mb-5 mb-xl-0">				
 				<div class="pe-xxl-4 hero-content-mobile">
 					<span class="heading-color d-none d-md-inline-block bg-light small rounded-3 px-3 py-2 mt-4 mt-md-2 mt-xl-0">🤩 Services numériques de confiance</span><!-- Title -->					
-					<h1 class="hero-title mt-5 lh-base text-center text-xl-start display-6 display-xl-1" style="font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -0.5px;">AGENCE DIGITALE
+					<h1 class="hero-title mt-5 lh-base text-center text-xl-start display-6 display-xl-1" style="font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -0.5px;">Agence Digital
 						<br class="d-none d-xl-block">   
 						<span class="cd-headline clip big-clip is-full-width text-primary mb-0 d-inline-block">
 							<span class="typed" data-type-text="Développement Web&&Analyse de Données&&Design Web&&UI/UX Design"></span>
@@ -53,7 +53,7 @@ Main Banner START -->
 					<form class="col-12 col-md-10 bg-body border rounded-2 position-relative p-2 mt-4 mt-md-5">
 						<div class="input-group">
 							<input class="form-control focus-shadow-none border-0 me-1" type="email" placeholder="Entrez votre adresse email">
-							<button type="button" class="btn btn-dark rounded-2 mb-0">Commencer l'essai !</button>
+							<button type="button" class="btn btn-dark rounded-2 mb-0">Rejoindre Notre NewsLetter!</button>
 						</div>
 					</form>					
 					<!-- Features -->
@@ -185,34 +185,31 @@ Client START -->
 							"576": {"slidesPerView": 3}, 
 							"992": {"slidesPerView": 4}, 
 							"1200": {"slidesPerView": 5}
-						}}'>
-
-					<!-- Slider items -->
+						}}'>					<!-- Slider items -->
 					<div class="swiper-wrapper align-items-center">
-						<!-- Image -->
-						<div class="swiper-slide">
-							<img src="{% static 'images/client/01.svg' %}" alt="client-img">
-						</div>
-						<!-- Image -->
-						<div class="swiper-slide">
-							<img src="{% static 'images/client/02.svg' %}" alt="client-img">
-						</div>
-						<!-- Image -->
-						<div class="swiper-slide">
-							<img src="{% static 'images/client/03.svg' %}" alt="client-img">
-						</div>
-						<!-- Image -->
-						<div class="swiper-slide">
-							<img src="{% static 'images/client/04.svg' %}" alt="client-img">
-						</div>
-						<!-- Image -->
-						<div class="swiper-slide">
-							<img src="{% static 'images/client/05.svg' %}" alt="client-img">
-						</div>
-						<!-- Image -->
-						<div class="swiper-slide">
-							<img src="{% static 'images/client/01.svg' %}" alt="client-img">
-						</div>
+						{% for client in active_clients %}
+							<!-- Client: {{ client.name }} -->
+							<div class="swiper-slide">
+								{% if client.logo %}
+									<a href="{{ client.website }}" target="_blank" title="{{ client.name }}">
+										<img src="{{ client.logo_urls.original }}" alt="{{ client.name }} - logo">
+									</a>
+								{% else %}
+									<span>{{ client.name }}</span>
+								{% endif %}
+							</div>
+						{% empty %}
+							<!-- Afficher les logos statiques si aucun client n'est disponible -->
+							<div class="swiper-slide">
+								<img src="{% static 'images/client/01.svg' %}" alt="client-img">
+							</div>
+							<div class="swiper-slide">
+								<img src="{% static 'images/client/02.svg' %}" alt="client-img">
+							</div>
+							<div class="swiper-slide">
+								<img src="{% static 'images/client/03.svg' %}" alt="client-img">
+							</div>
+						{% endfor %}
 					</div>
 				</div>
 				<!-- Slider END -->
